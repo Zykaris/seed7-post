@@ -76,8 +76,8 @@ extern boolType interpreter_exception;
 #define CATCH_STACK_INCREMENT 128
 typedef longjmpPosition catch_type;
 catch_type *catch_stack;
-size_t catch_stack_pos;
-size_t max_catch_stack;
+size_t catch_stack_pos = 0;
+size_t max_catch_stack = 0;
 
 
 
@@ -158,9 +158,13 @@ void setupStack (memSizeType stackSize)
 #if HAS_SIGALTSTACK && !SIGNAL_STACK_ENABLED
     alternateSignalStack();
 #endif
-    catch_stack_pos = 0;
-    max_catch_stack = CATCH_STACK_INCREMENT;
-    catch_stack = (catch_type *) malloc(max_catch_stack * sizeof(catch_type));
+    catch_stack = (catch_type *) malloc(CATCH_STACK_INCREMENT * sizeof(catch_type));
+    /* If catch_stack is NULL interpreted programs use              */
+    /* resizeCatchStackOkay() to maintain the catch_stack.          */
+    /* If catch_stack is NULL compiled programs raise MEMORY_ERROR. */
+    if (likely(catch_stack != NULL)) {
+      max_catch_stack = CATCH_STACK_INCREMENT;
+    } /* if */
 #if CHECK_STACK
     stack_base = &aVariable;
     /* printf("base:  " F_U_MEM(8) "\n", (memSizeType) stack_base); */

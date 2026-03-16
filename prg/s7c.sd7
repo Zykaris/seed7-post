@@ -2677,7 +2677,7 @@ const proc: process_main_declaration (in reference: current_object,
     end if;
     main_prolog &:= "\n";
     main_prolog &:= "{\n";
-    main_prolog &:= "int fail_value;\n";
+    main_prolog &:= "int fail_value = MEMORY_ERROR;\n";
     if config.trace_function then
       main_prolog &:= "fprintf(";
       main_prolog &:= config.trace_output;
@@ -2707,7 +2707,8 @@ const proc: process_main_declaration (in reference: current_object,
     end if;
     main_prolog &:= "setupStack(" <& config.stack_size <& ");\n";
     main_prolog &:= "catch_stack_pos++;\n";
-    main_prolog &:= "if ((fail_value = do_setjmp(catch_stack[catch_stack_pos])) == 0) {\n";
+    main_prolog &:= "if (catch_stack != NULL &&\n";
+    main_prolog &:= "    (fail_value = do_setjmp(catch_stack[catch_stack_pos])) == 0) {\n";
     main_prolog &:= "setupRand();\n";
     main_prolog &:= "setupFiles();\n";
     if ccConf.USE_WINMAIN then
