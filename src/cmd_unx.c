@@ -447,7 +447,6 @@ static gid_t getGidFromGroup (const const_striType group, errInfoType *err_info)
         logError(printf("getGidFromGroup: getgrnam_r(\"%s\", ...) failed:\n"
                         "errno=%d\nerror: %s\n",
                         os_group, errno, strerror(errno)););
-        os_stri_free(os_group);
         *err_info = FILE_ERROR;
         gid = (gid_t) -1;
       } else
@@ -571,7 +570,6 @@ static uid_t getUidFromUser (const const_striType user, errInfoType *err_info)
         logError(printf("getUidFromUser: getpwnam_r(\"%s\", ...) failed:\n"
                         "errno=%d\nerror: %s\n",
                         os_user, errno, strerror(errno)););
-        os_stri_free(os_user);
         *err_info = FILE_ERROR;
         uid = (uid_t) -1;
       } else
