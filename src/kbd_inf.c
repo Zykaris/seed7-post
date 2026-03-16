@@ -417,6 +417,13 @@ static charType read_f_key (charType actual_char)
         /* K_NULLCMD should do nothing in every application.        */
         /* fprintf(stderr, "<possible garbage keys>"); */
         pos = strlen(last_partial_match);
+        if (pos >= sizeof(last_partial_match) - 1) {
+          /* Prevent writing past the end of last_partial_match.    */
+          /* Clear the partial state and return K_UNDEF.            */
+          last_partial_match[0] = '\0';
+          last_partial_time = 0;
+          return K_UNDEF;
+        } /* if */
         last_partial_match[pos] = (char) actual_char;
         last_partial_match[pos + 1] = '\0';
         pos++;
