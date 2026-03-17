@@ -4433,10 +4433,11 @@ intType cmdShell (const const_striType command, const const_striType parameters)
     } else {
       logMessage(printf("cmdShell: os_command: \"" FMT_S_OS "\"\n", os_command););
       result = (intType) os_system(os_command);
-      /* if (result != 0) {
-        printf("errno=%d\nerror: %s\n", errno, strerror(errno));
-        printf("result=" FMT_D "\n", result);
-      } */
+      logErrorIfTrue(result != 0,
+                     printf("cmdShell(\"%s\", ", striAsUnquotedCStri(command));
+                     printf("\"%s\") failed:\n", striAsUnquotedCStri(parameters));
+                     printf("errno=%d\nerror: %s\n", errno, strerror(errno));
+                     printf("result=" FMT_D "\n", result););
       FREE_OS_STRI(os_command);
     } /* if */
     logFunction(printf("cmdShell --> " FMT_D "\n", result););
