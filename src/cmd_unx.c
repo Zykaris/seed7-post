@@ -305,11 +305,11 @@ int unsetenv7 (const char *name)
             *found = environ7[nameCount - 1];
           } /* if */
           environ7[nameCount - 1] = NULL;
-          if (nameCount <= MAX_MEMSIZETYPE / sizeof(char *)) {
-            resizedEnviron7 = realloc(environ7, nameCount * sizeof(char *));
-            if (resizedEnviron7 != NULL) {
-              environ7 = resizedEnviron7;
-            } /* if */
+          /* The realloc() below shrinks environ7. No need to     */
+          /* check: nameCount <= MAX_MEMSIZETYPE / sizeof(char *) */
+          resizedEnviron7 = realloc(environ7, nameCount * sizeof(char *));
+          if (resizedEnviron7 != NULL) {
+            environ7 = resizedEnviron7;
           } /* if */
         } /* if */
       } /* if */
