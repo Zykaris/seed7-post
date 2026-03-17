@@ -178,17 +178,26 @@ void setupStack (memSizeType stackSize)
 boolType resizeCatchStackOkay (void)
 
   {
+    memSizeType new_max_catch_stack;
     catch_type *resized_stack;
     boolType okay = TRUE;
 
   /* resizeCatchStackOkay */
-    max_catch_stack += CATCH_STACK_INCREMENT;
-    resized_stack = (catch_type *) realloc(catch_stack, max_catch_stack * sizeof(catch_type));
-    if (unlikely(resized_stack == NULL)) {
+    if (unlikely(max_catch_stack >
+                 MAX_MEMSIZETYPE / sizeof(catch_type) - CATCH_STACK_INCREMENT)) {
       catch_stack_pos--;
       okay = FALSE;
     } else {
-      catch_stack = resized_stack;
+      new_max_catch_stack = max_catch_stack + CATCH_STACK_INCREMENT;
+      resized_stack = (catch_type *) realloc(catch_stack,
+          new_max_catch_stack * sizeof(catch_type));
+      if (unlikely(resized_stack == NULL)) {
+        catch_stack_pos--;
+        okay = FALSE;
+      } else {
+        catch_stack = resized_stack;
+        max_catch_stack = new_max_catch_stack;
+      } /* if */
     } /* if */
     return okay;
   } /* resizeCatchStackOkay */
@@ -198,16 +207,25 @@ boolType resizeCatchStackOkay (void)
 void resize_catch_stack (void)
 
   {
+    memSizeType new_max_catch_stack;
     catch_type *resized_stack;
 
   /* resize_catch_stack */
-    max_catch_stack += CATCH_STACK_INCREMENT;
-    resized_stack = (catch_type *) realloc(catch_stack, max_catch_stack * sizeof(catch_type));
-    if (unlikely(resized_stack == NULL)) {
+    if (unlikely(max_catch_stack >
+                 MAX_MEMSIZETYPE / sizeof(catch_type) - CATCH_STACK_INCREMENT)) {
       catch_stack_pos--;
       raise_error(MEMORY_ERROR);
     } else {
-      catch_stack = resized_stack;
+      new_max_catch_stack = max_catch_stack + CATCH_STACK_INCREMENT;
+      resized_stack = (catch_type *) realloc(catch_stack,
+          new_max_catch_stack * sizeof(catch_type));
+      if (unlikely(resized_stack == NULL)) {
+        catch_stack_pos--;
+        raise_error(MEMORY_ERROR);
+      } else {
+        catch_stack = resized_stack;
+        max_catch_stack = new_max_catch_stack;
+      } /* if */
     } /* if */
   } /* resize_catch_stack */
 
