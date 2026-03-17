@@ -222,7 +222,7 @@ const string: chkbst_output is "\n\
   \Bstring assignment works correctly.\n\
   \Bstring append works correctly.\n\
   \Bstring comparisons work correctly.\n\
-  \String indices work correctly.\n\
+  \Bstring indices work correctly.\n\
   \The ternary operator ? : works correctly for bstring.\n";
 
 const string: chkarr_output is "\n\
