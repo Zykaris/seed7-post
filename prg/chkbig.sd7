@@ -53,64 +53,52 @@ const func boolean: boolExpr (in boolean: okay) is
   return boolean(ord(okay) + length(str(rand(1, 9))[2 ..]));
 
 
-const func boolean: raisesRangeError (in func string: expression) is func
-  result
-    var boolean: raisesRangeError is FALSE;
-  local
-    var string: exprResult is "";
+const proc: DECLARE_RAISES_RAMGE_ERROR (in type: aType) is func
   begin
-    block
-      exprResult := expression;
-    exception
-      catch RANGE_ERROR:
-        raisesRangeError := TRUE;
-    end block;
+
+    const func boolean: raisesRangeError (in func aType: expression) is func
+      result
+        var boolean: raisesRangeError is FALSE;
+      local
+        var aType: exprResult is aType.value;
+      begin
+        block
+          exprResult := expression;
+        exception
+          catch RANGE_ERROR:
+            raisesRangeError := TRUE;
+        end block;
+      end func;
+
   end func;
 
 
-const func boolean: raisesRangeError (in func bigInteger: bigIntExpr) is func
-  result
-    var boolean: raisesRangeError is FALSE;
-  local
-    var bigInteger: exprResult is 0_;
+DECLARE_RAISES_RAMGE_ERROR(string);
+DECLARE_RAISES_RAMGE_ERROR(bigInteger);
+
+
+const proc: DECLARE_RAISES_NUMERIC_ERROR (in type: aType) is func
   begin
-    block
-      exprResult := bigIntExpr;
-    exception
-      catch RANGE_ERROR:
-        raisesRangeError := TRUE;
-    end block;
+
+    const func boolean: raisesNumericError (in func aType: bigIntExpr) is func
+      result
+        var boolean: raisesRangeError is FALSE;
+      local
+        var aType: exprResult is aType.value;
+      begin
+        block
+          exprResult := bigIntExpr;
+        exception
+          catch NUMERIC_ERROR:
+            raisesRangeError := TRUE;
+        end block;
+      end func;
+
   end func;
 
 
-const func boolean: raisesNumericError (in func bigInteger: bigIntExpr) is func
-  result
-    var boolean: raisesRangeError is FALSE;
-  local
-    var bigInteger: exprResult is 0_;
-  begin
-    block
-      exprResult := bigIntExpr;
-    exception
-      catch NUMERIC_ERROR:
-        raisesRangeError := TRUE;
-    end block;
-  end func;
-
-
-const func boolean: raisesNumericError (in func quotRem: quotRemExpr) is func
-  result
-    var boolean: raisesRangeError is FALSE;
-  local
-    var quotRem: exprResult is quotRem.value;
-  begin
-    block
-      exprResult := quotRemExpr;
-    exception
-      catch NUMERIC_ERROR:
-        raisesRangeError := TRUE;
-    end block;
-  end func;
+DECLARE_RAISES_NUMERIC_ERROR(bigInteger);
+DECLARE_RAISES_NUMERIC_ERROR(quotRem);
 
 
 const proc: chkLiteral is func
