@@ -102,7 +102,7 @@ typedef struct {
 #define STMT_NAME_BUFFER_SIZE STRLEN(STMT_NAME_PREFIX) + \
                               UINTTYPE_DECIMAL_SIZE + NULL_TERMINATION_LEN
 
-#define USE_IMPLICIT_COMMIT_MECHANISM 1
+#define USE_IMPLICIT_COMMIT_MECHANISM 0
 
 typedef struct {
     uintType       usage_count;
