@@ -107,7 +107,7 @@ static PSID worldSid = NULL;
  *  - (2n) + 1 backslashes followed by a quotation mark produce
  *    n backslashes followed by a quotation mark. In this case the
  *    quotation mark is added to the argument and the quotation mode
- +    is not changed.
+ *    is not changed.
  *  - n backslashes not followed by a quotation mark simply produce
  *    n backslashes.
  */
@@ -372,14 +372,14 @@ os_striType *getEnvironment (void)
     if (envBuffer == NULL) {
       env = NULL;
     } else {
-      /* printf("envBuffer: \"" FMT_S_OS "\"\n", envBuffer); */
+      logMessage(printf("envBuffer: \"" FMT_S_OS "\"\n", envBuffer););
       currPos = envBuffer;
       do {
         length = os_stri_strlen(currPos);
         currPos = &currPos[length + 1];
         numElems++;
       } while (length != 0);
-      /* printf("numElems: " FMT_U_MEM "\n", numElems); */
+      logMessage(printf("numElems: " FMT_U_MEM "\n", numElems););
       env = (os_striType *) malloc(numElems * sizeof(os_striType));
       if (env != NULL) {
         currPos = envBuffer;
@@ -390,9 +390,10 @@ os_striType *getEnvironment (void)
           currIdx++;
         } while (length != 0);
         env[currIdx - 1] = NULL;
-        /* for (currIdx = 0; env[currIdx] != NULL; currIdx++) {
-          printf("env[" FMT_U_MEM "]: \"" FMT_S_OS "\"\n", currIdx, env[currIdx]);
-        } */
+        logMessage(for (currIdx = 0; env[currIdx] != NULL; currIdx++) {
+                     printf("env[" FMT_U_MEM "]: \"" FMT_S_OS "\"\n",
+                            currIdx, env[currIdx]);
+                   });
       } /* if */
       if (env == NULL || env[0] == NULL) {
         if (FreeEnvironmentStringsW(envBuffer) == 0) {
@@ -411,7 +412,7 @@ void freeEnvironment (os_striType *environment)
     if (environment != NULL) {
       if (environment[0] != NULL) {
         if (FreeEnvironmentStringsW(environment[0]) == 0) {
-          logError(printf("getEnvironment: FreeEnvironmentStrings() failed.\n"););
+          logError(printf("freeEnvironment: FreeEnvironmentStrings() failed.\n"););
         } /* if */
       } /* if */
       free(environment);
