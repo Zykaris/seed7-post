@@ -2706,7 +2706,6 @@ const proc: process_main_declaration (in reference: current_object,
       main_prolog &:= "].depth++;\n";
     end if;
     main_prolog &:= "setupStack(" <& config.stack_size <& ");\n";
-    main_prolog &:= "catch_stack_pos++;\n";
     main_prolog &:= "if (catch_stack != NULL &&\n";
     main_prolog &:= "    (fail_value = do_setjmp(catch_stack[catch_stack_pos])) == 0) {\n";
     main_prolog &:= "setupRand();\n";

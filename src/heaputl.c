@@ -159,9 +159,8 @@ void setupStack (memSizeType stackSize)
     alternateSignalStack();
 #endif
     catch_stack = (catch_type *) malloc(CATCH_STACK_INCREMENT * sizeof(catch_type));
-    /* If catch_stack is NULL interpreted programs use              */
-    /* resizeCatchStackOkay() to maintain the catch_stack.          */
-    /* If catch_stack is NULL compiled programs raise MEMORY_ERROR. */
+    /* If catch_stack is NULL interpreted and */
+    /* compiled programs raise MEMORY_ERROR.  */
     if (likely(catch_stack != NULL)) {
       max_catch_stack = CATCH_STACK_INCREMENT;
     } /* if */
@@ -238,16 +237,9 @@ void no_memory (const_cstriType source_file, int source_line)
     exception_number = MEMORY_ERROR;
     error_file = source_file;
     error_line = source_line;
-    if (catch_stack_pos > 0) {
-      logFunction(printf("no_memory(\"%s\", %d) --> longjmp\n",
-                         source_file, source_line););
-      do_longjmp(catch_stack[catch_stack_pos], MEMORY_ERROR);
-    } else {
-      /* shutDrivers(); */
-      logFunction(printf("no_memory(\"%s\", %d) --> exit\n",
-                         source_file, source_line););
-      os_exit(1);
-    } /* if */
+    logFunction(printf("no_memory(\"%s\", %d) --> longjmp\n",
+                       source_file, source_line););
+    do_longjmp(catch_stack[catch_stack_pos], MEMORY_ERROR);
   } /* no_memory */
 
 
