@@ -116,9 +116,10 @@ static void closeStack (void)
 
   { /* closeStack */
     logFunction(printf("closeStack\n"););
-#if HAS_SIGALTSTACK
+#if HAS_SIGALTSTACK && !SIGNAL_STACK_ENABLED
     free(signalStack);
 #endif
+    free(catch_stack);
   } /* closeStack */
 
 
