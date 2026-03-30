@@ -2574,6 +2574,9 @@ rtlArrayType cmdEnvironment (void)
                                              (memSizeType) (nameEndPos - *nameStartPos));
             if (unlikely(variableName == NULL)) {
               err_info = MEMORY_ERROR;
+              /* Free what has been added up to now. */
+              freeRtlStriArray(environment_array, used_max_position);
+              environment_array = NULL;
             } else {
               environment_array = addStriToRtlArray(variableName, environment_array,
                   used_max_position);
