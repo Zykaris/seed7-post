@@ -131,7 +131,7 @@ const type: httpResponse is new struct
 
 
 (**
- *  Set the proxy server to be used for getHttp.
+ *  Set the proxy server to be used for HTTP requests.
  *)
 const proc: setProxy (in string: serverName, in integer: portNumber) is func
   begin
