@@ -2121,8 +2121,9 @@ striType strChRepl (const const_striType mainStri,
                 printf("\"%s\")\n",
                        striAsUnquotedCStri(replacement)););
     main_size = mainStri->size;
-    /* printf("main_size=" FMT_U_MEM ", replacement->size=" FMT_U_MEM "\n",
-        main_size, replacement->size); */
+    logMessage(printf("strChRepl: main_size=" FMT_U_MEM
+                      ", replacement->size=" FMT_U_MEM "\n",
+                      main_size, replacement->size););
     if (replacement->size > 1) {
       if (unlikely(main_size > MAX_STRI_LEN / replacement->size)) {
         raise_error(MEMORY_ERROR);
@@ -4406,9 +4407,10 @@ striType strRepl (const const_striType mainStri,
                 fflush(stdout););
     main_size = mainStri->size;
     searched_size = searched->size;
-    /* printf("main_size=" FMT_U_MEM ", searched_size=" FMT_U_MEM
-        ", replacement->size=" FMT_U_MEM "\n",
-        main_size, searched_size, replacement->size); */
+    logMessage(printf("strRepl: main_size=" FMT_U_MEM
+                      ", searched_size=" FMT_U_MEM
+                      ", replacement->size=" FMT_U_MEM "\n",
+                      main_size, searched_size, replacement->size););
     if (searched_size != 0 && replacement->size > searched_size) {
       if (unlikely(main_size / searched_size + 1 > MAX_STRI_LEN / replacement->size)) {
         raise_error(MEMORY_ERROR);
