@@ -40,6 +40,11 @@
                                       (stri)->mem[(stri)->size - 1] << 1 ^ \
                                       (stri)->size))
 
+#define ustringHashCode(ustri, length) (intType) ((uintType) ((ustri)[0]) << 5 ^ \
+                                                  (uintType) ((ustri)[(length) >> 1]) << 3 ^ \
+                                                  (uintType) ((ustri)[(length) - 1]) << 1 ^ \
+                                                  (length));
+
 
 void toLower (const strElemType *const source, memSizeType length,
     strElemType *const dest);

@@ -211,10 +211,7 @@ intType ustriHash (const const_ustriType ustri)
       hashCode = 0;
     } else {
       length = strlen((const_cstriType) ustri);
-      hashCode = (intType) ((uintType) (ustri[0]) << 5 ^
-                            (uintType) (ustri[length >> 1]) << 3 ^
-                            (uintType) (ustri[length - 1]) << 1 ^
-                            length);
+      hashCode = ustringHashCode(ustri, length);
     } /* if */
     logFunction(printf("ustriHash --> " FMT_D "\n", hashCode););
     return hashCode;
