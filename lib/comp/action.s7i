@@ -106,6 +106,8 @@ const proc: process_action (in reference: function, in ref_list: params,
         process(ACE_EQ, function, params, c_expr);
       when {"ACE_GEN"}:
         process(ACE_GEN, function, params, c_expr);
+      when {"ACE_HASHCODE"}:
+        process(ACE_HASHCODE, function, params, c_expr);
       when {"ACE_ICONV1"}:
         process(ACE_ICONV1, function, params, c_expr);
       when {"ACE_ICONV3"}:

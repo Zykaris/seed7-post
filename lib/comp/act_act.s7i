@@ -24,22 +24,24 @@
 (********************************************************************)
 
 
-const ACTION: ACE_CMP    is action "ACE_CMP";
-const ACTION: ACE_CPY    is action "ACE_CPY";
-const ACTION: ACE_EQ     is action "ACE_EQ";
-const ACTION: ACE_GEN    is action "ACE_GEN";
-const ACTION: ACE_ICONV1 is action "ACE_ICONV1";
-const ACTION: ACE_ICONV3 is action "ACE_ICONV3";
-const ACTION: ACE_NE     is action "ACE_NE";
-const ACTION: ACE_ORD    is action "ACE_ORD";
-const ACTION: ACE_STR    is action "ACE_STR";
-const ACTION: ACE_VALUE  is action "ACE_VALUE";
+const ACTION: ACE_CMP      is action "ACE_CMP";
+const ACTION: ACE_CPY      is action "ACE_CPY";
+const ACTION: ACE_EQ       is action "ACE_EQ";
+const ACTION: ACE_GEN      is action "ACE_GEN";
+const ACTION: ACE_HASHCODE is action "ACE_HASHCODE";
+const ACTION: ACE_ICONV1   is action "ACE_ICONV1";
+const ACTION: ACE_ICONV3   is action "ACE_ICONV3";
+const ACTION: ACE_NE       is action "ACE_NE";
+const ACTION: ACE_ORD      is action "ACE_ORD";
+const ACTION: ACE_STR      is action "ACE_STR";
+const ACTION: ACE_VALUE    is action "ACE_VALUE";
 
 
 const proc: act_prototypes (inout file: c_prog) is func
 
   begin
     declareExtern(c_prog, "const_actEntryType aceGen (const const_striType);");
+    declareExtern(c_prog, "intType            aceHashCode (const_actEntryType);");
     declareExtern(c_prog, "const_actEntryType aceIConv (intType);");
     declareExtern(c_prog, "intType            aceOrd (const_actEntryType);");
     declareExtern(c_prog, "striType           aceStr (const_actEntryType);");
@@ -112,6 +114,17 @@ const proc: process (ACE_GEN, in reference: function,
     programUses.compilerLibrary := TRUE;
     c_expr.expr &:= "aceGen(";
     process_expr(params[2], c_expr);
+    c_expr.expr &:= ")";
+  end func;
+
+
+const proc: process (ACE_HASHCODE, in reference: function,
+    in ref_list: params, inout expr_type: c_expr) is func
+
+  begin
+    programUses.compilerLibrary := TRUE;
+    c_expr.expr := "aceHashCode(";
+    process_expr(params[1], c_expr);
     c_expr.expr &:= ")";
   end func;
 
