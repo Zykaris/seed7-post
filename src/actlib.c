@@ -53,6 +53,34 @@
 
 
 /**
+ *  Compare two action entries.
+ *  @return -1, 0 or 1 if the first argument is considered to be
+ *          respectively less than, equal to, or greater than the
+ *          second.
+ */
+objectType ace_cmp (listType arguments)
+
+  {
+    memSizeType ref1;
+    memSizeType ref2;
+    intType signumValue;
+
+  /* ace_cmp */
+    isit_actentry(arg_1(arguments));
+    isit_actentry(arg_2(arguments));
+    ref1 = (memSizeType) take_actentry(arg_1(arguments));
+    ref2 = (memSizeType) take_actentry(arg_2(arguments));
+    if (ref1 < ref2) {
+      signumValue = -1;
+    } else {
+      signumValue = ref1 > ref2;
+    } /* if */
+    return bld_int_temp(signumValue);
+  } /* ace_cmp */
+
+
+
+/**
  *  Assign source/arg_3 to dest/arg_1.
  *  A copy function assumes that dest/arg_1 contains a legal value.
  */

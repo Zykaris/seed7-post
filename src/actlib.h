@@ -25,6 +25,7 @@
 /*                                                                  */
 /********************************************************************/
 
+objectType ace_cmp     (listType arguments);
 objectType ace_cpy     (listType arguments);
 objectType ace_create  (listType arguments);
 objectType ace_gen     (listType arguments);

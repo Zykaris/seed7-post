@@ -74,6 +74,7 @@
 static const actEntryRecord actEntryTable[] = {
     { "ACT_ILLEGAL",                  act_illegal,                  },
 
+    { "ACE_CMP",                      ace_cmp,                      },
     { "ACE_CPY",                      ace_cpy,                      },
     { "ACE_CREATE",                   ace_create,                   },
     { "ACE_EQ",                       ace_eq,                       },
