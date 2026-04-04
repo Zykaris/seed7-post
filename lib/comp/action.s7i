@@ -98,6 +98,8 @@ const proc: process_action (in reference: function, in ref_list: params,
     actionName := str(currentAction);
     # c_expr.expr &:= "/* " <& actionName <& " */\n";
     case actionName of
+      when {"ACE_CMP"}:
+        process(ACE_CMP, function, params, c_expr);
       when {"ACE_CPY"}:
         process(ACE_CPY, function, params, c_expr);
       when {"ACE_EQ"}:

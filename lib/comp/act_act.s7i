@@ -24,6 +24,7 @@
 (********************************************************************)
 
 
+const ACTION: ACE_CMP    is action "ACE_CMP";
 const ACTION: ACE_CPY    is action "ACE_CPY";
 const ACTION: ACE_EQ     is action "ACE_EQ";
 const ACTION: ACE_GEN    is action "ACE_GEN";
@@ -43,6 +44,18 @@ const proc: act_prototypes (inout file: c_prog) is func
     declareExtern(c_prog, "intType            aceOrd (const_actEntryType);");
     declareExtern(c_prog, "striType           aceStr (const_actEntryType);");
     declareExtern(c_prog, "const_actEntryType aceValue (const const_objRefType);");
+  end func;
+
+
+const proc: process (ACE_CMP, in reference: function,
+    in ref_list: params, inout expr_type: c_expr) is func
+
+  begin
+    c_expr.expr &:= "ptrCmp(";
+    process_expr(params[1], c_expr);
+    c_expr.expr &:= ", ";
+    process_expr(params[2], c_expr);
+    c_expr.expr &:= ")";
   end func;
 
 
