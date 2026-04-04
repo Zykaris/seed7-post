@@ -127,6 +127,31 @@ objectType ace_create (listType arguments)
 
 
 /**
+ *  Check if two action entries are equal.
+ *  @return TRUE if both actions are equal,
+ *          FALSE otherwise.
+ */
+objectType ace_eq (listType arguments)
+
+  {
+    const_actEntryType actEntry1;
+    const_actEntryType actEntry2;
+
+  /* ace_eq */
+    isit_actentry(arg_1(arguments));
+    isit_actentry(arg_3(arguments));
+    actEntry1 = take_actentry(arg_1(arguments));
+    actEntry2 = take_actentry(arg_3(arguments));
+    if (actEntry1 == actEntry2) {
+      return SYS_TRUE_OBJECT;
+    } else {
+      return SYS_FALSE_OBJECT;
+    } /* if */
+  } /* ace_eq */
+
+
+
+/**
  *  Convert a string to an action.
  *  @param actionName/arg_2 Name of the action to be converted.
  *  @return an action which corresponds to the given string.
@@ -152,31 +177,6 @@ objectType ace_gen (listType arguments)
       return bld_actentry_temp(actEntry);
     } /* if */
   } /* ace_gen */
-
-
-
-/**
- *  Check if two action entries are equal.
- *  @return TRUE if both actions are equal,
- *          FALSE otherwise.
- */
-objectType ace_eq (listType arguments)
-
-  {
-    const_actEntryType actEntry1;
-    const_actEntryType actEntry2;
-
-  /* ace_eq */
-    isit_actentry(arg_1(arguments));
-    isit_actentry(arg_3(arguments));
-    actEntry1 = take_actentry(arg_1(arguments));
-    actEntry2 = take_actentry(arg_3(arguments));
-    if (actEntry1 == actEntry2) {
-      return SYS_TRUE_OBJECT;
-    } else {
-      return SYS_FALSE_OBJECT;
-    } /* if */
-  } /* ace_eq */
 
 
 
