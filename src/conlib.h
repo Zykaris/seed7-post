@@ -34,6 +34,6 @@ objectType con_h_scroll (listType arguments);
 objectType con_line     (listType arguments);
 objectType con_open     (listType arguments);
 objectType con_setpos   (listType arguments);
-objectType con_v_scl    (listType arguments);
+objectType con_v_scroll (listType arguments);
 objectType con_width    (listType arguments);
 objectType con_write    (listType arguments);

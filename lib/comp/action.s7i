@@ -608,9 +608,9 @@ const proc: process_action (in reference: function, in ref_list: params,
       when {"CON_SETPOS"}:
         programUses.consoleLibrary := TRUE;
         process(CON_SETPOS, function, params, c_expr);
-      when {"CON_V_SCL"}:
+      when {"CON_V_SCROLL"}:
         programUses.consoleLibrary := TRUE;
-        process(CON_V_SCL, function, params, c_expr);
+        process(CON_V_SCROLL, function, params, c_expr);
       when {"CON_WIDTH"}:
         programUses.consoleLibrary := TRUE;
         process(CON_WIDTH, function, params, c_expr);

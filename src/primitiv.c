@@ -318,7 +318,7 @@ static const actEntryRecord actEntryTable[] = {
     { "CON_LINE",                     con_line,                     },
     { "CON_OPEN",                     con_open,                     },
     { "CON_SETPOS",                   con_setpos,                   },
-    { "CON_V_SCL",                    con_v_scl,                    },
+    { "CON_V_SCROLL",                 con_v_scroll,                 },
     { "CON_WIDTH",                    con_width,                    },
     { "CON_WRITE",                    con_write,                    },
 
