@@ -123,7 +123,7 @@ const proc: process (ACE_HASHCODE, in reference: function,
 
   begin
     programUses.compilerLibrary := TRUE;
-    c_expr.expr := "aceHashCode(";
+    c_expr.expr &:= "aceHashCode(";
     process_expr(params[1], c_expr);
     c_expr.expr &:= ")";
   end func;
@@ -168,7 +168,7 @@ const proc: process (ACE_ORD, in reference: function,
 
   begin
     programUses.compilerLibrary := TRUE;
-    c_expr.expr := "aceOrd(";
+    c_expr.expr &:= "aceOrd(";
     process_expr(params[1], c_expr);
     c_expr.expr &:= ")";
   end func;
