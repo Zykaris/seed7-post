@@ -2543,7 +2543,6 @@ rtlArrayType cmdEnvironment (void)
     os_striType *nameStartPos;
     os_striType nameEndPos;
     striType variableName;
-    errInfoType err_info = OKAY_NO_ERROR;
     rtlArrayType environment_array;
 
   /* cmdEnvironment */
@@ -2573,7 +2572,6 @@ rtlArrayType cmdEnvironment (void)
             variableName = conv_from_os_stri(*nameStartPos,
                                              (memSizeType) (nameEndPos - *nameStartPos));
             if (unlikely(variableName == NULL)) {
-              err_info = MEMORY_ERROR;
               /* Free what has been added up to now. */
               freeRtlStriArray(environment_array, used_max_position);
               environment_array = NULL;
@@ -2587,11 +2585,7 @@ rtlArrayType cmdEnvironment (void)
       } /* if */
       environment_array = completeRtlStriArray(environment_array, used_max_position);
       if (unlikely(environment_array == NULL)) {
-        err_info = MEMORY_ERROR;
-      } /* if */
-      if (unlikely(err_info != OKAY_NO_ERROR)) {
-        raise_error(err_info);
-        environment_array = NULL;
+        raise_error(MEMORY_ERROR);
       } /* if */
     } /* if */
 #if USE_GET_ENVIRONMENT
