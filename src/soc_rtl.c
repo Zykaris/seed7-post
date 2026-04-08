@@ -107,6 +107,8 @@ static boolType initialized = FALSE;
 
 #endif
 
+#define assert_socket_not_null(aSocket)
+
 #define BUFFER_SIZE                4096
 #define GETS_DEFAULT_SIZE       1048576
 #define READ_STRI_INIT_SIZE         256
@@ -651,6 +653,7 @@ socketType socAccept (const const_socketType listenerSocket,
                        listenerSocket != NULL ?
                            listenerSocket->socketNumber : -2,
                        socAddressCStri(*address)););
+    assert_socket_not_null(listenerSocket);
     if (unlikely(listenerSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socAccept(%d, \"%s\"): "
                       "Attempt to write to closed socket.\n",
@@ -935,6 +938,7 @@ void socBind (const const_socketType listenerSocket,
                        listenerSocket != NULL ?
                            listenerSocket->socketNumber : -2,
                        socAddressCStri(address)););
+    assert_socket_not_null(listenerSocket);
     if (unlikely(listenerSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socBind(%d, \"%s\"): "
                       "Attempt to bind a closed socket.\n",
@@ -966,6 +970,7 @@ void socClose (const socketType aSocket)
                        aSocket == NULL ? "NULL " : "",
                        aSocket != NULL ? aSocket->socketNumber : -2,
                        aSocket != NULL ? aSocket->usage_count : (uintType) 0););
+    assert_socket_not_null(aSocket);
     if (unlikely(aSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socClose(" FMT_U_MEM " %d (usage=" FMT_U ")): "
                       "Attempt to close a closed socket.\n",
@@ -995,6 +1000,7 @@ void socConnect (const const_socketType aSocket,
                        aSocket != NULL ?
                            aSocket->socketNumber : -2,
                        socAddressCStri(address)););
+    assert_socket_not_null(aSocket);
     if (unlikely(aSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socConnect(%d, \"%s\"): "
                       "Attempt to connect to a closed socket.\n",
@@ -1162,6 +1168,7 @@ void socFree (const socketType oldSocket)
                        oldSocket == NULL ? "NULL " : "",
                        oldSocket != NULL ? oldSocket->socketNumber : -2,
                        oldSocket != NULL ? oldSocket->usage_count : (uintType) 0););
+    assert_socket_not_null(oldSocket);
     if (oldSocket->socketNumber != EMPTY_SOCKET) {
       socketClose(oldSocket->socketNumber);
     } /* if */
@@ -1187,6 +1194,7 @@ charType socGetc (const const_socketType inSocket,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        *eofIndicator););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socGetc(%d, '\\" FMT_U32 ";'): "
                       "Attempt to read from a closed socket.\n",
@@ -1236,6 +1244,7 @@ striType socGets (const const_socketType inSocket, intType length,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        length, *eofIndicator););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socGets(%d, " FMT_D ", '\\" FMT_U32 ";'): "
                       "Attempt to read from a closed socket.\n",
@@ -1397,6 +1406,7 @@ bstriType socGetLocalAddr (const const_socketType aSocket)
     logFunction(printf("socGetLocalAddr(%d)\n",
                        aSocket != NULL ?
                            aSocket->socketNumber : -2););
+    assert_socket_not_null(aSocket);
     if (unlikely(aSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socGetLocalAddr(%d): "
                       "Attempt to use a closed socket.\n",
@@ -1459,6 +1469,7 @@ bstriType socGetPeerAddr (const const_socketType aSocket)
     logFunction(printf("socGetPeerAddr(%d)\n",
                        aSocket != NULL ?
                            aSocket->socketNumber : -2););
+    assert_socket_not_null(aSocket);
     if (unlikely(aSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socGetPeerAddr(%d): "
                       "Attempt to use a closed socket.\n",
@@ -1520,6 +1531,7 @@ boolType socHasNext (const const_socketType inSocket)
     logFunction(printf("socHasNext(%d)\n",
                        inSocket != NULL ?
                            inSocket->socketNumber : -2););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socHasNext(%d)\n", inSocket->socketNumber););
       raise_error(FILE_ERROR);
@@ -1964,6 +1976,7 @@ boolType socInputReady (const const_socketType inSocket,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        seconds, micro_seconds););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socInputReady(%d, " FMT_D ", " FMT_D "): "
                       "Attempt to use a closed socket.\n",
@@ -2015,6 +2028,7 @@ striType socLineRead (const const_socketType inSocket,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        *terminationChar););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socLineRead(%d, '\\" FMT_U32 ";'): "
                       "Attempt to read from closed socket.\n",
@@ -2224,6 +2238,7 @@ void socListen (const const_socketType listenerSocket, intType backlog)
                        listenerSocket != NULL ?
                            listenerSocket->socketNumber : -2,
                        backlog););
+    assert_socket_not_null(listenerSocket);
     if (unlikely(listenerSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socListen(%d, " FMT_D "): "
                       "Attempt to listen at a closed socket.\n",
@@ -2254,6 +2269,7 @@ intType socOrd (const const_socketType aSocket)
                        aSocket == NULL ? "*NULL* " : "",
                        (intType) (aSocket != NULL ?
                                   aSocket->socketNumber : -2)););
+    assert_socket_not_null(aSocket);
     return (intType) aSocket->socketNumber;
   } /* socOrd */
 
@@ -2273,6 +2289,7 @@ intType socRecv (const const_socketType inSocket, striType *const stri,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        length, flags););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socRecv(%d, *, " FMT_D ", 0x" FMT_X "): "
                       "Attempt to receive from a closed socket.\n",
@@ -2338,6 +2355,7 @@ intType socRecvfrom (const const_socketType inSocket, striType *const stri,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        length, flags););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socRecvfrom(%d, *, " FMT_D ", 0x" FMT_X "): "
                       "Attempt to receive from a closed socket.\n",
@@ -2442,6 +2460,7 @@ intType socSend (const const_socketType outSocket,
                        outSocket != NULL ?
                            outSocket->socketNumber : -2,
                        striAsUnquotedCStri(stri), flags););
+    assert_socket_not_null(outSocket);
     if (unlikely(outSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socSend(%d, \"%s\", 0x" FMT_X "): "
                       "Attempt to send to a closed socket.\n",
@@ -2498,6 +2517,7 @@ intType socSendto (const const_socketType outSocket,
                            outSocket->socketNumber : -2,
                        striAsUnquotedCStri(stri), flags,
                        socAddressCStri(address)););
+    assert_socket_not_null(outSocket);
     if (unlikely(outSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socSendto(%d, \"%s\", 0x" FMT_X ", \"%s\"): "
                       "Attempt to send to a closed socket.\n",
@@ -2549,6 +2569,7 @@ void socSetOptBool (const const_socketType aSocket, intType optname,
                        aSocket != NULL ?
                            aSocket->socketNumber : -2,
                        optname, optval ? "TRUE" : "FALSE"););
+    assert_socket_not_null(aSocket);
     if (unlikely(aSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socSetOptBool(%d, " FMT_D ", %s): "
                       "Attempt to set an option of a closed socket.\n",
@@ -2663,6 +2684,7 @@ striType socWordRead (const const_socketType inSocket,
                        inSocket != NULL ?
                            inSocket->socketNumber : -2,
                        *terminationChar););
+    assert_socket_not_null(inSocket);
     if (unlikely(inSocket->socketNumber == EMPTY_SOCKET)) {
       logError(printf("socWordRead(%d, '\\" FMT_U32 ";'): "
                       "Attempt to read from closed socket.\n",
@@ -2747,6 +2769,7 @@ void socWrite (const const_socketType outSocket,
                        outSocket != NULL ?
                            outSocket->socketNumber : -2,
                        striAsUnquotedCStri(stri)););
+    assert_socket_not_null(outSocket);
     if (unlikely(outSocket->socketNumber == EMPTY_SOCKET)) {
         logError(printf("socWrite(%d, \"%s\"): "
                         "Attempt to write to closed socket.\n",
