@@ -646,7 +646,8 @@ static striType receive_and_alloc_stri (socketNumberType inSocket,
  *  @exception FILE_ERROR A system function returns an error.
  *  @exception MEMORY_ERROR An out of memory situation occurred.
  */
-socketType socAccept (socketType listenerSocket, bstriType *address)
+socketType socAccept (const const_socketType listenerSocket,
+    bstriType *const address)
 
   {
     memSizeType actual_address_size;
@@ -938,7 +939,8 @@ striType socAddrService (const const_bstriType address)
  *  @param address An internet listener socket address.
  *  @exception FILE_ERROR A system function returns an error.
  */
-void socBind (socketType listenerSocket, const_bstriType address)
+void socBind (const const_socketType listenerSocket,
+    const const_bstriType address)
 
   { /* socBind */
     logFunction(printf("socBind(%d, \"%s\")\n",
@@ -968,7 +970,7 @@ void socBind (socketType listenerSocket, const_bstriType address)
  *  Close the socket 'aSocket'.
  *  @exception FILE_ERROR A system function returns an error.
  */
-void socClose (socketType aSocket)
+void socClose (const socketType aSocket)
 
   { /* socClose */
     logFunction(printf("socClose(" FMT_U_MEM " %s%d (usage=" FMT_U "))\n",
@@ -997,7 +999,8 @@ void socClose (socketType aSocket)
  *  Connect 'aSocket' to the given 'address'.
  *  @exception FILE_ERROR A system function returns an error.
  */
-void socConnect (socketType aSocket, const_bstriType address)
+void socConnect (const const_socketType aSocket,
+    const const_bstriType address)
 
   { /* socConnect */
     logFunction(printf("socConnect(%d, \"%s\")\n",
@@ -1163,7 +1166,7 @@ void socDestrGeneric (const genericType old_value)
 
 
 
-void socFree (socketType oldSocket)
+void socFree (const socketType oldSocket)
 
   { /* socFree */
     logFunction(printf("socFree(" FMT_U_MEM " %s%d (usage=" FMT_U "))\n",
@@ -1183,7 +1186,8 @@ void socFree (socketType oldSocket)
  *  Read a character from 'inSocket'.
  *  @return the character read.
  */
-charType socGetc (socketType inSocket, charType *const eofIndicator)
+charType socGetc (const const_socketType inSocket,
+    charType *const eofIndicator)
 
   {
     unsigned char ch;
@@ -1229,7 +1233,8 @@ charType socGetc (socketType inSocket, charType *const eofIndicator)
  *  @exception RANGE_ERROR The length is negative.
  *  @exception MEMORY_ERROR Not enough memory to represent the result.
  */
-striType socGets (socketType inSocket, intType length, charType *const eofIndicator)
+striType socGets (const const_socketType inSocket, intType length,
+    charType *const eofIndicator)
 
   {
     memSizeType chars_requested;
@@ -1392,7 +1397,7 @@ striType socGetHostname (void)
  *  @exception FILE_ERROR A system function returns an error.
  *  @exception MEMORY_ERROR Not enough memory to represent the result.
  */
-bstriType socGetLocalAddr (socketType sock)
+bstriType socGetLocalAddr (const const_socketType sock)
 
   {
     sockLenType addrlen;
@@ -1454,7 +1459,7 @@ bstriType socGetLocalAddr (socketType sock)
  *  @exception FILE_ERROR A system function returns an error.
  *  @exception MEMORY_ERROR Not enough memory to represent the result.
  */
-bstriType socGetPeerAddr (socketType sock)
+bstriType socGetPeerAddr (const const_socketType sock)
 
   {
     sockLenType addrlen;
@@ -1516,7 +1521,7 @@ bstriType socGetPeerAddr (socketType sock)
  *  it may block.
  *  @return FALSE if socGetc would return EOF, TRUE otherwise.
  */
-boolType socHasNext (socketType inSocket)
+boolType socHasNext (const const_socketType inSocket)
 
   {
     unsigned char next_char;
@@ -1960,7 +1965,8 @@ bstriType socInetServAddr (intType port)
 
 
 
-boolType socInputReady (socketType inSocket, intType seconds, intType micro_seconds)
+boolType socInputReady (const const_socketType inSocket,
+    intType seconds, intType micro_seconds)
 
   {
     boolType inputReady;
@@ -2001,7 +2007,8 @@ boolType socInputReady (socketType inSocket, intType seconds, intType micro_seco
  *  @return the line read.
  *  @exception MEMORY_ERROR Not enough memory to represent the result.
  */
-striType socLineRead (socketType inSocket, charType *const terminationChar)
+striType socLineRead (const const_socketType inSocket,
+    charType *const terminationChar)
 
   {
     os_socketType inSocketNumber;
@@ -2222,7 +2229,7 @@ striType socLineRead (socketType inSocket, charType *const terminationChar)
  *  the queue of pending connections for 'listenerSocket' may grow.
  *  @exception FILE_ERROR A system function returns an error.
  */
-void socListen (socketType listenerSocket, intType backlog)
+void socListen (const const_socketType listenerSocket, intType backlog)
 
   { /* socListen */
     logFunction(printf("socListen(%d, " FMT_D ")\n",
@@ -2251,7 +2258,7 @@ void socListen (socketType listenerSocket, intType backlog)
 
 
 
-intType socOrd (socketType aSocket)
+intType socOrd (const const_socketType aSocket)
 
   { /* socOrd */
     logFunction(printf("socOrd(%d) --> %s" FMT_D "\n",
@@ -2264,7 +2271,8 @@ intType socOrd (socketType aSocket)
 
 
 
-intType socRecv (socketType sock, striType *stri, intType length, intType flags)
+intType socRecv (const const_socketType sock, striType *const stri,
+    intType length, intType flags)
 
   {
     striType resized_stri;
@@ -2326,8 +2334,8 @@ intType socRecv (socketType sock, striType *stri, intType length, intType flags)
 
 
 
-intType socRecvfrom (socketType sock, striType *stri, intType length, intType flags,
-    bstriType *address)
+intType socRecvfrom (const const_socketType sock, striType *const stri,
+    intType length, intType flags, bstriType *const address)
 
   {
     striType resized_stri;
@@ -2432,7 +2440,8 @@ intType socRecvfrom (socketType sock, striType *stri, intType length, intType fl
 
 
 
-intType socSend (socketType sock, const const_striType stri, intType flags)
+intType socSend (const const_socketType sock,
+    const const_striType stri, intType flags)
 
   {
     bstriType buf;
@@ -2486,8 +2495,8 @@ intType socSend (socketType sock, const const_striType stri, intType flags)
 
 
 
-intType socSendto (socketType sock, const const_striType stri, intType flags,
-    const_bstriType address)
+intType socSendto (const const_socketType sock,
+    const const_striType stri, intType flags, const_bstriType address)
 
   {
     bstriType buf;
@@ -2544,7 +2553,8 @@ intType socSendto (socketType sock, const const_striType stri, intType flags,
 
 
 
-void socSetOptBool (socketType sock, intType optname, boolType optval)
+void socSetOptBool (const const_socketType sock, intType optname,
+    boolType optval)
 
   { /* socSetOptBool */
     logFunction(printf("socSetOptBool(%d, " FMT_D ", %s)\n",
@@ -2647,7 +2657,8 @@ socketType socSocket (intType domain, intType type, intType protocol)
  *  @return the word read.
  *  @exception MEMORY_ERROR Not enough memory to represent the result.
  */
-striType socWordRead (socketType inSocket, charType *const terminationChar)
+striType socWordRead (const const_socketType inSocket,
+    charType *const terminationChar)
 
   {
     unsigned char ch;
@@ -2731,7 +2742,8 @@ striType socWordRead (socketType inSocket, charType *const terminationChar)
  *  @exception RANGE_ERROR The string contains a character that does
  *             not fit into a byte.
  */
-void socWrite (socketType outSocket, const const_striType stri)
+void socWrite (const const_socketType outSocket,
+    const const_striType stri)
 
   {
     ucharType buffer[BUFFER_SIZE];
