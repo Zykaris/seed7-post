@@ -95,6 +95,8 @@ extern int _chsize_s (int fd, int64Type size);
 extern int _chsize (int fd, long size);
 #endif
 
+#define assert_file_not_null(aFile)
+
 #define MAX_MODE_LEN               5
 #define BUFFER_SIZE             4096
 #define GETS_DEFAULT_SIZE    1048576
@@ -789,6 +791,7 @@ static striType doGetsFromTerminal (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        length););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(length <= 0)) {
       if (unlikely(length != 0)) {
@@ -843,6 +846,7 @@ static striType doLineReadFromTerminal (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        *terminationChar););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     ch = readCharFromTerminal(cInFile, &sigintReceived);
     if (unlikely(sigintReceived)) {
@@ -879,6 +883,7 @@ static striType doWordReadFromTerminal (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        *terminationChar););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     ch = readCharFromTerminal(cInFile, &sigintReceived);
     if (unlikely(sigintReceived)) {
@@ -919,6 +924,7 @@ bigIntType filBigLng (const const_fileType aFile)
     logFunction(printf("filBigLng(%s%d)\n",
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filBigLng: Attempt to get the length of a closed file.\n"););
@@ -957,6 +963,7 @@ void filBigSeek (const const_fileType aFile,
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0,
                        bigHexCStri(position)););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filBigSeek: Attempt to set the current position of a closed file.\n"););
@@ -1006,6 +1013,7 @@ bigIntType filBigTell (const const_fileType aFile)
     logFunction(printf("filBigTell(%s%d)\n",
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filBigTell: Attempt to get the current position of a closed file.\n"););
@@ -1048,6 +1056,7 @@ void filClose (const fileType aFile)
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0,
                        aFile != NULL ? aFile->usage_count : (uintType) 0););
+    assert_file_not_null(aFile);
     if (unlikely(aFile->cFile == NULL)) {
       logError(printf("filClose: Called with a closed file.\n"););
       raise_error(FILE_ERROR);
@@ -1226,6 +1235,7 @@ boolType filEof (const const_fileType inFile)
                        (memSizeType) inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filEof: Attempt to test a closed file.\n"););
@@ -1250,6 +1260,7 @@ intType filFileType (const const_fileType aFile)
     intType result;
 
   /* filFileType */
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     file_no = os_fileno(cFile);
     if (unlikely(file_no == -1 ||
@@ -1290,6 +1301,7 @@ void filFlush (const const_fileType outFile)
     logFunction(printf("filFlush(%s%d)\n",
                        outFile == NULL ? "NULL " : "",
                        outFile != NULL ? safe_fileno(outFile->cFile) : 0););
+    assert_file_not_null(outFile);
     cOutFile = outFile->cFile;
     if (unlikely(cOutFile == NULL)) {
       logError(printf("filFlush: Attempt to flush a closed file.\n"););
@@ -1309,6 +1321,7 @@ void filFree (const fileType oldFile)
                        oldFile == NULL ? "NULL " : "",
                        oldFile != NULL ? safe_fileno(oldFile->cFile) : 0,
                        oldFile != NULL ? oldFile->usage_count : (uintType) 0););
+    assert_file_not_null(oldFile);
     if (oldFile->cFile != NULL) {
       fclose(oldFile->cFile);
     } /* if */
@@ -1334,6 +1347,7 @@ charType filGetcChkCtrlC (const const_fileType inFile)
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile)
                                       : 0););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filGetcChkCtrlC: Attempt to read from closed file.\n"););
@@ -1390,6 +1404,7 @@ striType filGets (const const_fileType inFile, intType length)
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        length););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filGets: Attempt to read from closed file.\n"););
@@ -1517,6 +1532,7 @@ striType filGetsChkCtrlC (const const_fileType inFile, intType length)
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        length););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filGetsChkCtrlC: Attempt to read from closed file.\n"););
@@ -1554,6 +1570,7 @@ boolType filHasNext (const const_fileType inFile)
                        (memSizeType) inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filHasNext: Attempt to test a closed file.\n"););
@@ -1598,6 +1615,7 @@ boolType filHasNextChkCtrlC (const const_fileType inFile)
                        (memSizeType) inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filHasNextChkCtrlC: Attempt to test a closed file.\n"););
@@ -1664,6 +1682,7 @@ striType filLineRead (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        *terminationChar););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filLineRead: Attempt to read from closed file.\n"););
@@ -1750,6 +1769,7 @@ striType filLineReadChkCtrlC (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        *terminationChar););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filLineReadChkCtrlC: Attempt to read from closed file.\n"););
@@ -1779,6 +1799,7 @@ striType filLiteral (const const_fileType aFile)
     striType result;
 
   /* filLiteral */
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (cFile == NULL) {
       file_name = "NULL";
@@ -1820,6 +1841,7 @@ intType filLng (const const_fileType aFile)
                        (memSizeType) aFile,
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filLng: Attempt to get the length of a closed file.\n"););
@@ -2083,6 +2105,7 @@ void filPclose (const fileType aPipe)
                        aPipe == NULL ? "NULL " : "",
                        aPipe != NULL ? safe_fileno(aPipe->cFile) : 0););
 #if HAS_POPEN
+    assert_file_not_null(aPipe);
     if (unlikely(aPipe->cFile == NULL)) {
       logError(printf("filPclose: Called with a closed file.\n"););
       raise_error(FILE_ERROR);
@@ -2253,6 +2276,7 @@ void filSeek (const const_fileType aFile, intType position)
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0,
                        position););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filSeek: Attempt to set the current position of a closed file.\n"););
@@ -2314,6 +2338,7 @@ boolType filSeekable (const const_fileType aFile)
                        (memSizeType) aFile,
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filSeekable: Attempt to get propery of a closed file.\n"););
@@ -2352,6 +2377,7 @@ void filSetbuf (const const_fileType aFile, intType mode, intType size)
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0,
                        mode, size););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filSetbuf: Attempt to set the file buffering of a closed file.\n"););
@@ -2395,6 +2421,7 @@ intType filTell (const const_fileType aFile)
                        (memSizeType) aFile,
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filTell: Attempt to get the current position of a closed file.\n"););
@@ -2465,6 +2492,7 @@ striType filTerminatedRead (const const_fileType inFile,
     } else {
       termCh = (int) terminator;
     } /* if */
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filTerminatedRead: Attempt to read from closed file.\n"););
@@ -2558,6 +2586,7 @@ void filTruncate (const const_fileType aFile, intType length)
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0,
                        length););
+    assert_file_not_null(aFile);
     cFile = aFile->cFile;
     if (unlikely(cFile == NULL)) {
       logError(printf("filTruncate: Attempt to truncate a closed file.\n"););
@@ -2645,6 +2674,7 @@ striType filWordRead (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        *terminationChar););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filWordRead: Attempt to read from closed file.\n"););
@@ -2736,6 +2766,7 @@ striType filWordReadChkCtrlC (const const_fileType inFile,
                        inFile == NULL ? "NULL " : "",
                        inFile != NULL ? safe_fileno(inFile->cFile) : 0,
                        *terminationChar););
+    assert_file_not_null(inFile);
     cInFile = inFile->cFile;
     if (unlikely(cInFile == NULL)) {
       logError(printf("filWordReadChkCtrlC: Attempt to read from closed file.\n"););
@@ -2777,6 +2808,7 @@ void filWrite (const const_fileType outFile, const const_striType stri)
                        outFile == NULL ? "NULL " : "",
                        outFile != NULL ? safe_fileno(outFile->cFile) : 0,
                        striAsUnquotedCStri(stri)););
+    assert_file_not_null(outFile);
     cOutFile = outFile->cFile;
     if (unlikely(cOutFile == NULL)) {
       logError(printf("filWrite: Attempt to write to closed file.\n"););
