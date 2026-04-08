@@ -408,13 +408,7 @@ static boolType socketInputReady (socketNumberType inSocket, intType seconds,
   /* socketInputReady */
     logFunction(printf("socketInputReady(%d, " FMT_D ", " FMT_D ")\n",
                        inSocket, seconds, micro_seconds););
-    if (unlikely(inSocket == (socketNumberType) -1)) {
-      logError(printf("socketInputReady(%d, " FMT_D ", " FMT_D "): "
-                      "Invalid socket.\n",
-                      inSocket, seconds, micro_seconds););
-      raise_error(FILE_ERROR);
-      inputReady = FALSE;
-    } else if (unlikely(seconds < 0 || seconds >= INT_MAX / 1000 ||
+    if (unlikely(seconds < 0 || seconds >= INT_MAX / 1000 ||
                  micro_seconds < 0 || micro_seconds >= 1000000)) {
       logError(printf("socketInputReady(%d, " FMT_D ", " FMT_D"): "
                       "seconds or micro_seconds not in allowed range.\n",
@@ -473,13 +467,7 @@ static boolType socketInputReady (socketNumberType inSocket, intType seconds,
   /* socketInputReady */
     logFunction(printf("socketInputReady(%d, " FMT_D ", " FMT_D ")\n",
                        inSocket, seconds, micro_seconds););
-    if (unlikely(inSocket == (socketNumberType) -1)) {
-      logError(printf("socketInputReady(%d, " FMT_D ", " FMT_D "): "
-                      "Invalid socket.\n",
-                      inSocket, seconds, micro_seconds););
-      raise_error(FILE_ERROR);
-      inputReady = FALSE;
-    } else if (unlikely(seconds < 0 || seconds >= LONG_MAX ||
+    if (unlikely(seconds < 0 || seconds >= LONG_MAX ||
                  micro_seconds < 0 || micro_seconds >= 1000000)) {
       logError(printf("socketInputReady(%d, " FMT_D ", " FMT_D"): "
                       "seconds or micro_seconds not in allowed range.\n",
