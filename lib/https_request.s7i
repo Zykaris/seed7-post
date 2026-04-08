@@ -155,6 +155,7 @@ const func httpResponse: https (POST, in string: location, in httpBody: body, in
   local
     var httpRequest: request is httpRequest.value;
   begin
+    request.method := "POST";
     request.location := getHttpLocation(location, httpsDefaultPort);
     request.body := body;
     request.creds := creds;
@@ -172,6 +173,7 @@ const func httpResponse: https (POST, in string: location, in string: plain, in 
   local
     var httpRequest: request is httpRequest.value;
   begin
+    request.method := "POST";
     request.location := getHttpLocation(location, httpsDefaultPort);
     request.body.contentType := "text/plain";
     request.body.content := plain;
@@ -208,3 +210,24 @@ const func httpResponse: https (POST, in string: location, in hash [string] stri
 
 const func httpResponse: https (POST, in string: location, in hash [string] string: fields) is
   return https(POST, location, fields, httpCreds.value);
+
+
+(**
+ *  Send a custom request using the HTTPS protocol.
+ *)
+const func httpResponse: https (in string: method, in string: location, in httpBody: body, in httpCreds: creds) is func
+  result
+    var httpResponse: response is httpResponse.value;
+  local
+    var httpRequest: request is httpRequest.value;
+  begin
+    request.method := method;
+    request.location := getHttpLocation(location, httpsDefaultPort);
+    request.body := body;
+    request.creds := creds;
+    response := sendHttps(request, TRUE);
+  end func;
+
+
+const func httpResponse: https (in string: method, in string: location, in httpBody: body) is
+  return https(method, location, body, httpCreds.value);

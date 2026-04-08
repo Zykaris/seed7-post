@@ -131,6 +131,14 @@ const type: httpResponse is new struct
 
 
 (**
+ *  Determine whether or not an http response indicates success.
+ *  @return TRUE if response contains a 2xx status code; FALSE otherwise.
+ *)
+const func boolean: successful (in httpResponse: response) is
+  return response.status >= "200" and response.status < "300";
+
+
+(**
  *  Set the proxy server to be used for HTTP requests.
  *)
 const proc: setProxy (in string: serverName, in integer: portNumber) is func
@@ -688,3 +696,24 @@ const func httpResponse: http (POST, in string: location, in hash [string] strin
 
 const func httpResponse: http (POST, in string: location, in hash [string] string: fields) is
   return http(POST, location, fields, httpCreds.value);
+
+
+(**
+ *  Send a custom request using the HTTP protocol.
+ *)
+const func httpResponse: http (in string: method, in string: location, in httpBody: body, in httpCreds: creds) is func
+  result
+    var httpResponse: response is httpResponse.value;
+  local
+    var httpRequest: request is httpRequest.value;
+  begin
+    request.method := method;
+    request.location := getHttpLocation(location, httpsDefaultPort);
+    request.body := body;
+    request.creds := creds;
+    response := sendHttp(request, TRUE);
+  end func;
+
+
+const func httpResponse: http (in string: method, in string: location, in httpBody: body) is
+  return http(method, location, body, httpCreds.value);
