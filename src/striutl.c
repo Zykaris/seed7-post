@@ -3462,18 +3462,14 @@ os_striType cp_to_command (const const_striType command,
 
 #ifdef ESCAPE_SHELL_COMMANDS
 /**
- *  Convert a string, such that it can be used as shell parameter.
- *  The function adds escape characters or quotations to a string.
- *  The result is useable as parameter for the functions 'cmdShell'
- *  and 'filPopen'. Shell parameters must be escaped individually.
- *  Afterwards escaped parameters are joined to a space separated
- *  list of parameters.
+ *  Return a string to be useable as command for system() and popen().
+ *  Add escapes to a command for system() and popen().
  *  @param err_info Unchanged if the function succeeds, and
  *                  MEMORY_ERROR if a memory allocation failed, and
  *                  RANGE_ERROR if an illegal character is in 'stri'.
- *  @return a string which can be used as shell parameter.
+ *  @return a string which can be used as shell command.
  */
-striType shellEscape (const const_striType stri, errInfoType *err_info)
+striType escapeCommand (const const_striType stri, errInfoType *err_info)
 
   {
     /* Maximum escape sequence length in shell parameter: */
@@ -3483,8 +3479,8 @@ striType shellEscape (const const_striType stri, errInfoType *err_info)
     striType resized_result;
     striType result;
 
-  /* shellEscape */
-    logFunction(printf("shellEscape(\"%s\")\n",
+  /* escapeCommand */
+    logFunction(printf("escapeCommand(\"%s\")\n",
                        striAsUnquotedCStri(stri)););
     if (unlikely(stri->size > MAX_STRI_LEN / escSequenceMax ||
                  !ALLOC_STRI_SIZE_OK(result, escSequenceMax * stri->size))) {
@@ -3505,6 +3501,87 @@ striType shellEscape (const const_striType stri, errInfoType *err_info)
             break;
           case '\0': case '\n':
             logError(printf("shellEscape: "
+                            "Illegal character in string ('\\" FMT_U32 ";').\n",
+                            stri->mem[inPos]););
+            *err_info = RANGE_ERROR;
+            break;
+#if PATH_DELIMITER != '/'
+          case '/':
+            result->mem[outPos] = PATH_DELIMITER;
+            break;
+#endif
+          default:
+            result->mem[outPos] = stri->mem[inPos];
+            break;
+        } /* switch */
+      } /* for */
+      if (unlikely(*err_info != OKAY_NO_ERROR)) {
+        FREE_STRI2(result, escSequenceMax * stri->size);
+        result = NULL;
+      } else {
+        REALLOC_STRI_SIZE_SMALLER2(resized_result, result,
+            escSequenceMax * stri->size, outPos);
+        if (unlikely(resized_result == NULL)) {
+          FREE_STRI2(result, escSequenceMax * stri->size);
+          *err_info = MEMORY_ERROR;
+          result = NULL;
+        } else {
+          result = resized_result;
+          result->size = outPos;
+        } /* if */
+      } /* if */
+    } /* if */
+    logFunction(printf("escapeCommand --> \"%s\"\n",
+                       striAsUnquotedCStri(result)););
+    return result;
+  } /* escapeCommand */
+
+
+
+/**
+ *  Convert a string, such that it can be used as shell parameter.
+ *  The function adds escape characters to a string. The result is
+ *  useable as shell parameter for the functions system() and popen().
+ *  The function createCommandLine() processes all shell parameters
+ *  with escapeParameter(). In createCommandLine() escaped parameters
+ *  are joined to a space separated list of parameters.
+ *  @param err_info Unchanged if the function succeeds, and
+ *                  MEMORY_ERROR if a memory allocation failed, and
+ *                  RANGE_ERROR if an illegal character is in 'stri'.
+ *  @return a string which can be used as shell parameter.
+ */
+striType escapeParameter (const const_striType stri, errInfoType *err_info)
+
+  {
+    /* Maximum escape sequence length in shell parameter: */
+    const memSizeType escSequenceMax = STRLEN("\\=");
+    memSizeType inPos;
+    memSizeType outPos;
+    striType resized_result;
+    striType result;
+
+  /* escapeParameter */
+    logFunction(printf("escapeParameter(\"%s\")\n",
+                       striAsUnquotedCStri(stri)););
+    if (unlikely(stri->size > MAX_STRI_LEN / escSequenceMax ||
+                 !ALLOC_STRI_SIZE_OK(result, escSequenceMax * stri->size))) {
+      *err_info = MEMORY_ERROR;
+      result = NULL;
+    } else {
+      for (inPos = 0, outPos = 0; inPos < stri->size; inPos++, outPos++) {
+        switch (stri->mem[inPos]) {
+          case '\t': case ' ':  case '!':  case '\"': case '#':
+          case '$':  case '&':  case '\'': case '(':  case ')':
+          case '*':  case ',':  case ':':  case ';':  case '<':
+          case '=':  case '>':  case '?':  case '[':  case '\\':
+          case ']':  case '^':  case '`':  case '{':  case '|':
+          case '}':  case '~':
+            result->mem[outPos] = '\\';
+            outPos++;
+            result->mem[outPos] = stri->mem[inPos];
+            break;
+          case '\0': case '\n':
+            logError(printf("escapeParameter: "
                             "Illegal character in string ('\\" FMT_U32 ";').\n",
                             stri->mem[inPos]););
             *err_info = RANGE_ERROR;
@@ -3530,28 +3607,116 @@ striType shellEscape (const const_striType stri, errInfoType *err_info)
         } /* if */
       } /* if */
     } /* if */
-    logFunction(printf("shellEscape --> \"%s\"\n",
+    logFunction(printf("escapeParameter --> \"%s\"\n",
                        striAsUnquotedCStri(result)););
     return result;
-  } /* shellEscape */
+  } /* escapeParameter */
 
 #else
 
 
 
 /**
+ *  Return a string to be useable as command for system() and popen().
+ *  If necessary quote the command for system() and popen().
+ *  @param err_info Unchanged if the function succeeds, and
+ *                  MEMORY_ERROR if a memory allocation failed, and
+ *                  RANGE_ERROR if an illegal character is in 'stri'.
+ *  @return a string which can be used as shell command.
+ */
+striType escapeCommand (const const_striType stri, errInfoType *err_info)
+
+  {
+    /* A shell parameter might start and end with quote ("): */
+    const memSizeType numOfQuotes = 2;
+    memSizeType inPos;
+    memSizeType outPos;
+    boolType quotePath = FALSE;
+    striType resized_result;
+    striType result;
+
+  /* escapeCommand */
+    logFunction(printf("escapeCommand(\"%s\")\n",
+                       striAsUnquotedCStri(stri)););
+    if (unlikely(stri->size > MAX_STRI_LEN - numOfQuotes ||
+                 !ALLOC_STRI_SIZE_OK(result, stri->size + numOfQuotes))) {
+      *err_info = MEMORY_ERROR;
+      result = NULL;
+    } else {
+      for (inPos = 0, outPos = 0; inPos < stri->size; inPos++, outPos++) {
+        switch (stri->mem[inPos]) {
+          case ' ':  case '%':  case '&':  case '\'': case '(':
+          case ')':  case ',':  case ';':  case '=':  case '^':
+          case '~':  case 160:
+            quotePath = TRUE;
+            result->mem[outPos] = stri->mem[inPos];
+            break;
+          case ':':
+            if (likely(inPos == 1 &&
+                       stri->mem[0] >= 'a' && stri->mem[0] <= 'z')) {
+              /* After the drive letter a colon is allowed. */
+              result->mem[outPos] = stri->mem[inPos];
+            } else {
+              *err_info = RANGE_ERROR;
+            } /* if */
+            break;
+          case '\"': case '*':  case '<':  case '>':  case '?':
+          case '|':  case '\0': case '\n': case '\r':
+            *err_info = RANGE_ERROR;
+            break;
+#if PATH_DELIMITER != '/'
+          case '/':
+            result->mem[outPos] = PATH_DELIMITER;
+            break;
+#endif
+          default:
+            result->mem[outPos] = stri->mem[inPos];
+            break;
+        } /* switch */
+      } /* for */
+      if (quotePath) {
+        memmove(&result->mem[1], result->mem, sizeof(os_charType) * outPos);
+        result->mem[0] = '\"';
+        result->mem[outPos + 1] = '\"';
+	outPos += 2;
+      } /* if */
+      if (unlikely(*err_info != OKAY_NO_ERROR)) {
+        FREE_STRI2(result, stri->size + numOfQuotes);
+        result = NULL;
+      } else {
+        REALLOC_STRI_SIZE_SMALLER2(resized_result, result,
+            stri->size + numOfQuotes, outPos);
+        if (unlikely(resized_result == NULL)) {
+          FREE_STRI2(result, stri->size + numOfQuotes);
+          *err_info = MEMORY_ERROR;
+          result = NULL;
+        } else {
+          result = resized_result;
+          result->size = outPos;
+        } /* if */
+      } /* if */
+    } /* if */
+    logFunction(printf("escapeCommand --> \"%s\"\n",
+                       striAsUnquotedCStri(result)););
+    return result;
+  } /* escapeCommand */
+
+
+
+/**
  *  Convert a string, such that it can be used as shell parameter.
  *  The function adds escape characters or quotations to a string.
- *  The result is useable as parameter for the functions 'cmdShell'
- *  and 'filPopen'. Shell parameters must be escaped individually.
- *  Afterwards escaped parameters are joined to a space separated
- *  list of parameters.
+ *  The result is useable as shell parameter for the functions
+ *  system() and popen(). The function createCommandLine() processes
+ *  all shell parameters with escapeParameter(). In createCommandLine()
+ *  escaped parameters are joined to a space separated list of
+ *  parameters.
  *  @param err_info Unchanged if the function succeeds, and
  *                  MEMORY_ERROR if a memory allocation failed, and
  *                  RANGE_ERROR if an illegal character is in 'stri'.
  *  @return a string which can be used as shell parameter.
  */
-striType shellEscape (const const_striType stri, errInfoType *err_info)
+striType escapeParameter (const const_striType stri, errInfoType *err_info)
 
   {
     /* A shell parameter might start and end with quote ("): */
@@ -3566,8 +3731,8 @@ striType shellEscape (const const_striType stri, errInfoType *err_info)
     striType resized_result;
     striType result;
 
-  /* shellEscape */
-    logFunction(printf("shellEscape(\"%s\")\n",
+  /* escapeParameter */
+    logFunction(printf("escapeParameter(\"%s\")\n",
                        striAsUnquotedCStri(stri)););
     if (unlikely(stri->size > (MAX_STRI_LEN - numOfQuotes) / escSequenceMax ||
                  !ALLOC_STRI_SIZE_OK(result, escSequenceMax * stri->size + numOfQuotes))) {
@@ -3614,7 +3779,7 @@ striType shellEscape (const const_striType stri, errInfoType *err_info)
             result->mem[outPos] = stri->mem[inPos];
             break;
           case '\0': case '\n': case '\r':
-            logError(printf("shellEscape: "
+            logError(printf("escapeParameter: "
                             "Illegal character in string ('\\" FMT_U32 ";').\n",
                             stri->mem[inPos]););
             *err_info = RANGE_ERROR;
@@ -3667,9 +3832,9 @@ striType shellEscape (const const_striType stri, errInfoType *err_info)
         } /* if */
       } /* if */
     } /* if */
-    logFunction(printf("shellEscape --> \"%s\"\n",
+    logFunction(printf("escapeParameter --> \"%s\"\n",
                        striAsUnquotedCStri(result)););
     return result;
-  } /* shellEscape */
+  } /* escapeParameter */
 
 #endif

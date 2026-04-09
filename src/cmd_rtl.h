@@ -54,7 +54,7 @@ void initEmulatedCwd (errInfoType *err_info);
 #endif
 striType doGetCwd (errInfoType *err_info);
 striType getAbsolutePath (const const_striType aPath);
-os_striType generateShellCommand (const const_striType command,
+striType createCommandLine (const const_striType command,
     const const_rtlArrayType parameters, const const_striType redirectStdin,
     const const_striType redirectStdout, const const_striType redirectStderr,
     errInfoType *err_info);
