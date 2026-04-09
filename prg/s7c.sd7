@@ -8607,25 +8607,18 @@ const proc: execProgramScript (in string: command, in array string: parameters,
     in string: errorFile) is func
 
   local
-    var array string: redirection is 0 times "";
+    var string: redirectStdout is "";
+    var string: redirectStderr is "";
     var integer: shellResult is 0;
   begin
     logProgram(command, parameters, errorFile);
     case ccConf.CC_ERROR_FILEDES of
       when {1}:
-        redirection &:= ccConf.REDIRECT_FILEDES_1 & toShellPath(errorFile);
-        redirection &:= ccConf.REDIRECT_FILEDES_2 & ccConf.NULL_DEVICE;
+        redirectStdout := errorFile;
       when {2}:
-        redirection &:= ccConf.REDIRECT_FILEDES_2 & toShellPath(errorFile);
-        redirection &:= ccConf.REDIRECT_FILEDES_1 & ccConf.NULL_DEVICE;
+        redirectStderr := errorFile;
     end case;
-    if length(redirection) = 0 then
-      # An CC_ERROR_FILEDES of zero means: Do not redirect.
-      shellResult := shell(command, shellParameters(parameters));
-    else
-      shellResult := shell(command, shellParameters(parameters) <& " " <&
-                           join(redirection, " "));
-    end if;
+    shellResult := shell(command, parameters, "", redirectStdout, redirectStderr);
     if shellResult <> 0 then
       writeln("*** The shell command returned " <& shellResult);
     end if;

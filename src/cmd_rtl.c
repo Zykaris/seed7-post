@@ -329,6 +329,24 @@ static int cmp_mem (void const *strg1, void const *strg2)
 
 
 
+#if ANY_LOG_ACTIVE
+static void printParameters (const const_rtlArrayType parameters)
+
+  {
+    memSizeType paramSize;
+    memSizeType pos;
+
+  /* printParameters */
+    paramSize = arraySize(parameters);
+    for (pos = 0; pos < paramSize; pos++) {
+      printf(", \"%s\"",
+             striAsUnquotedCStri(parameters->arr[pos].value.striValue));
+    } /* for */
+  } /* printParameters */
+#endif
+
+
+
 static void remove_any_file (const const_os_striType file_name, errInfoType *);
 static void copy_any_file (const const_os_striType from_name,
     const const_os_striType to_name, int, errInfoType *err_info);
@@ -2007,6 +2025,194 @@ static striType toOsPath (const const_striType standardPath,
                        striAsUnquotedCStri(result), *err_info););
     return result;
   } /* toOsPath */
+
+
+
+os_striType generateShellCommand (const const_striType command,
+    const const_rtlArrayType parameters, const const_striType redirectStdin,
+    const const_striType redirectStdout, const const_striType redirectStderr,
+    errInfoType *err_info)
+
+  {
+    memSizeType numberOfParameters;
+    striType *parameterArray;
+    memSizeType pos;
+    striType escapedParameter;
+    memSizeType parameterLineSize = 0;
+    striType osPath;
+    striType stdinPath = NULL;
+    striType stdoutPath = NULL;
+    striType stderrPath = NULL;
+    striType parameterLine;
+    memSizeType index = 0;
+    os_striType result;
+
+  /* generateShellCommand */
+    numberOfParameters = arraySize(parameters);
+    logFunction(printf("generateShellCommand(\"%s\", array[" FMT_D
+                       "]",
+                       striAsUnquotedCStri(command),
+                       parameters->max_position);
+                printf(", \"%s\"", striAsUnquotedCStri(redirectStdin));
+                printf(", \"%s\"", striAsUnquotedCStri(redirectStdout));
+                printf(", \"%s\", %d)\n",
+                       striAsUnquotedCStri(redirectStderr),
+                       *err_info););
+    if (unlikely(numberOfParameters > MAX_MEMSIZETYPE / sizeof(striType))) {
+      *err_info = MEMORY_ERROR;
+      result = NULL;
+    } else {
+      parameterArray = (striType *) malloc(sizeof(striType) *
+                                           numberOfParameters);
+      if (unlikely(parameterArray == NULL)) {
+        *err_info = MEMORY_ERROR;
+        result = NULL;
+      } else {
+        for (pos = 0; pos < numberOfParameters; pos++) {
+          escapedParameter =
+              shellEscape(parameters->arr[pos].value.striValue,
+                          err_info);
+          parameterArray[pos] = escapedParameter;
+          if (likely(escapedParameter != NULL)) {
+            if (unlikely(escapedParameter->size >
+                         MAX_STRI_LEN - parameterLineSize - 1)) {
+              *err_info = MEMORY_ERROR;
+            } else {
+              parameterLineSize += escapedParameter->size + 1;
+            } /* if */
+          } /* if */
+        } /* for */
+        if (redirectStdin->size != 0) {
+          osPath = toOsPath(redirectStdin, err_info);
+          if (likely(osPath != NULL)) {
+            stdinPath = shellEscape(osPath, err_info);
+            if (likely(stdinPath != NULL)) {
+              parameterLineSize += STRLEN(REDIRECT_FILEDES_0) + 2 +
+                                   stdinPath->size;
+            } /* if */
+            FREE_STRI(osPath);
+          } /* if */
+        } /* if */
+        if (redirectStdout->size != 0) {
+          osPath = toOsPath(redirectStdout, err_info);
+          if (likely(osPath != NULL)) {
+            stdoutPath = shellEscape(osPath, err_info);
+            if (likely(stdoutPath != NULL)) {
+              parameterLineSize += STRLEN(REDIRECT_FILEDES_1) + 2 +
+                                   stdoutPath->size;
+            } /* if */
+            FREE_STRI(osPath);
+          } /* if */
+        } /* if */
+        if (redirectStderr->size != 0) {
+          osPath = toOsPath(redirectStderr, err_info);
+          if (likely(osPath != NULL)) {
+            stderrPath = shellEscape(osPath, err_info);
+            if (likely(stderrPath != NULL)) {
+              parameterLineSize += STRLEN(REDIRECT_FILEDES_2) + 2 +
+                                   stderrPath->size;
+            } /* if */
+            FREE_STRI(osPath);
+          } /* if */
+        } /* if */
+        if (unlikely(*err_info != OKAY_NO_ERROR)) {
+          logError(printf("generateShellCommand: err_info=%d\n",
+                          *err_info););
+          result = NULL;
+        } else {
+          if (parameterLineSize != 0) {
+            parameterLineSize--;
+          } /* if */
+          if (unlikely(!ALLOC_STRI_CHECK_SIZE(parameterLine,
+                                              parameterLineSize))) {
+            *err_info = MEMORY_ERROR;
+            result = NULL;
+          } else {
+            parameterLine->size = parameterLineSize;
+            for (pos = 0; pos < numberOfParameters; pos++) {
+              if (index != 0) {
+                parameterLine->mem[index] = ' ';
+                index++;
+              } /* if */
+              memcpy(&parameterLine->mem[index],
+                     parameterArray[pos]->mem,
+                     parameterArray[pos]->size * sizeof(strElemType));
+              index += parameterArray[pos]->size;
+            } /* for */
+            if (stdinPath != NULL) {
+              if (index != 0) {
+                parameterLine->mem[index] = ' ';
+                index++;
+              } /* if */
+              memcpy_to_strelem(&parameterLine->mem[index],
+                                (const_ustriType) REDIRECT_FILEDES_0,
+                                STRLEN(REDIRECT_FILEDES_0));
+              index += STRLEN(REDIRECT_FILEDES_0);
+              parameterLine->mem[index] = ' ';
+              index++;
+              memcpy(&parameterLine->mem[index], stdinPath->mem,
+                     stdinPath->size * sizeof(strElemType));
+              index += stdinPath->size;
+            } /* if */
+            if (stdoutPath != NULL) {
+              if (index != 0) {
+                parameterLine->mem[index] = ' ';
+                index++;
+              } /* if */
+              memcpy_to_strelem(&parameterLine->mem[index],
+                                (const_ustriType) REDIRECT_FILEDES_1,
+                                STRLEN(REDIRECT_FILEDES_1));
+              index += STRLEN(REDIRECT_FILEDES_1);
+              parameterLine->mem[index] = ' ';
+              index++;
+              memcpy(&parameterLine->mem[index], stdoutPath->mem,
+                     stdoutPath->size * sizeof(strElemType));
+              index += stdoutPath->size;
+            } /* if */
+            if (stderrPath != NULL) {
+              if (index != 0) {
+                parameterLine->mem[index] = ' ';
+                index++;
+              } /* if */
+              memcpy_to_strelem(&parameterLine->mem[index],
+                                (const_ustriType) REDIRECT_FILEDES_2,
+                                STRLEN(REDIRECT_FILEDES_2));
+              index += STRLEN(REDIRECT_FILEDES_2);
+              parameterLine->mem[index] = ' ';
+              index++;
+              memcpy(&parameterLine->mem[index], stderrPath->mem,
+                     stderrPath->size * sizeof(strElemType));
+              index += stderrPath->size;
+            } /* if */
+            logMessage(printf("generateShellCommand: "
+                              "parameterLine=\"%s\"\n",
+                              striAsUnquotedCStri(parameterLine)););
+            result = cp_to_command(command, parameterLine, err_info);
+            FREE_STRI(parameterLine);
+          } /* if */
+        } /* if */
+        for (pos = 0; pos < numberOfParameters; pos++) {
+          if (parameterArray[pos] != NULL) {
+            FREE_STRI(parameterArray[pos]);
+          } /* if */
+        } /* for */
+        free(parameterArray);
+        if (stdinPath != NULL) {
+          FREE_STRI(stdinPath);
+        } /* if */
+        if (stdoutPath != NULL) {
+          FREE_STRI(stdoutPath);
+        } /* if */
+        if (stderrPath != NULL) {
+          FREE_STRI(stderrPath);
+        } /* if */
+      } /* if */
+    } /* if */
+    logFunction(printf("generateShellCommand -> \"" FMT_S_OS
+                       "\" (err_info=%d)\n",
+                       result, *err_info););
+    return result;
+  } /* generateShellCommand */
 
 
 
@@ -4552,6 +4758,61 @@ intType cmdShell (const const_striType command, const const_striType parameters)
     logFunction(printf("cmdShell --> " FMT_D "\n", result););
     return result;
   } /* cmdShell */
+
+
+
+intType cmdShellCommand (const const_striType command,
+    const const_rtlArrayType parameters, const const_striType redirectStdin,
+    const const_striType redirectStdout, const const_striType redirectStderr)
+
+  {
+    errInfoType err_info = OKAY_NO_ERROR;
+    os_striType os_command;
+    intType result;
+
+  /* cmdShellCommand */
+    logFunction(printf("cmdShellCommand(\"%s\"",
+                       striAsUnquotedCStri(command));
+                printParameters(parameters);
+                printf(", \"%s\"", striAsUnquotedCStri(redirectStdin));
+                printf(", \"%s\"", striAsUnquotedCStri(redirectStdout));
+                printf(", \"%s\")\n",
+                       striAsUnquotedCStri(redirectStderr)););
+    os_command = generateShellCommand(command, parameters,
+        redirectStdin, redirectStdout, redirectStderr, &err_info);
+    if (unlikely(os_command == NULL)) {
+      logError(printf("cmdShellCommand: generateShellCommand(\"%s\"",
+                      striAsUnquotedCStri(command));
+               printParameters(parameters);
+               printf(", \"%s\"", striAsUnquotedCStri(redirectStdin));
+               printf(", \"%s\"", striAsUnquotedCStri(redirectStdout));
+               printf(", \"%s\", *) failed:\n",
+                      striAsUnquotedCStri(redirectStderr));
+               printf("err_info=%d\n", err_info););
+      raise_error(err_info);
+    } else {
+      logMessage(printf("cmdShellCommand: os_command: \"" FMT_S_OS "\"\n",
+                        os_command););
+      result = (intType) os_system(os_command);
+      logErrorIfTrue(result != 0,
+                     printf("cmdShellCommand(\"%s\"",
+                            striAsUnquotedCStri(command));
+                     printParameters(parameters);
+                     printf(", \"%s\"",
+                            striAsUnquotedCStri(redirectStdin));
+                     printf(", \"%s\"",
+                            striAsUnquotedCStri(redirectStdout));
+                     printf(", \"%s\"):\n",
+                            striAsUnquotedCStri(redirectStderr));
+                     printf("system(\"" FMT_S_OS "\") failed:\n",
+                            os_command);
+                     printf("errno=%d\nerror: %s\n", errno, strerror(errno));
+                     printf("result=" FMT_D "\n", result););
+      FREE_OS_STRI(os_command);
+    } /* if */
+    logFunction(printf("cmdShellCommand --> " FMT_D "\n", result););
+    return result;
+  } /* cmdShellCommand */
 
 
 

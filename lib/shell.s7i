@@ -48,6 +48,13 @@ const func integer: shell (in string: command,
                            in string: parameters) is action "CMD_SHELL";
 
 
+const func integer: shell (in string: command,
+                           in array string: parameters,
+                           in string: redirectStdin,
+                           in string: redirectStdout,
+                           in string: redirectStderr) is action "CMD_SHELL_COMMAND";
+
+
 (**
  *  Use the shell to execute a ''command'' with ''parameters''.
  *  Parameters which contain a space must be enclosed in double

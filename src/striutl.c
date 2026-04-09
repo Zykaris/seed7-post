@@ -3452,8 +3452,8 @@ os_striType cp_to_command (const const_striType command,
       } /* if */
       os_stri_free(os_commandPath);
     } /* if */
-    logFunction(printf("cp_to_command -> " FMT_S_OS
-                       " (err_info=%d)\n",
+    logFunction(printf("cp_to_command -> \"" FMT_S_OS
+                       "\" (err_info=%d)\n",
                        result, *err_info););
     return result;
   } /* cp_to_command */

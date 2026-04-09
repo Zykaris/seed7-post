@@ -68,6 +68,7 @@ const ACTION: CMD_SET_OWNER                is action "CMD_SET_OWNER";
 const ACTION: CMD_SET_OWNER_OF_SYMLINK     is action "CMD_SET_OWNER_OF_SYMLINK";
 const ACTION: CMD_SET_SEARCH_PATH          is action "CMD_SET_SEARCH_PATH";
 const ACTION: CMD_SHELL                    is action "CMD_SHELL";
+const ACTION: CMD_SHELL_COMMAND            is action "CMD_SHELL_COMMAND";
 const ACTION: CMD_SHELL_ESCAPE             is action "CMD_SHELL_ESCAPE";
 const ACTION: CMD_TO_OS_PATH               is action "CMD_TO_OS_PATH";
 const ACTION: CMD_UNSETENV                 is action "CMD_UNSETENV";
@@ -120,6 +121,7 @@ const proc: cmd_prototypes (inout file: c_prog) is func
     declareExtern(c_prog, "void        cmdSetOwnerOfSymlink (const const_striType, const const_striType);");
     declareExtern(c_prog, "void        cmdSetSearchPath (const const_arrayType);");
     declareExtern(c_prog, "intType     cmdShell (const const_striType, const const_striType);");
+    declareExtern(c_prog, "intType     cmdShellCommand (const const_striType, const const_arrayType, const const_striType, const const_striType, const const_striType);");
     declareExtern(c_prog, "striType    cmdShellEscape (const const_striType);");
     declareExtern(c_prog, "striType    cmdToOsPath (const const_striType);");
     declareExtern(c_prog, "void        cmdUnsetenv (const const_striType);");
@@ -759,6 +761,24 @@ const proc: process (CMD_SHELL, in reference: function,
     getAnyParamToExpr(params[1], c_expr);
     c_expr.expr &:= ", ";
     getAnyParamToExpr(params[2], c_expr);
+    c_expr.expr &:= ")";
+  end func;
+
+
+const proc: process (CMD_SHELL_COMMAND, in reference: function,
+    in ref_list: params, inout expr_type: c_expr) is func
+
+  begin
+    c_expr.expr &:= "cmdShellCommand(";
+    getAnyParamToExpr(params[1], c_expr);
+    c_expr.expr &:= ", ";
+    getAnyParamToExpr(params[2], c_expr);
+    c_expr.expr &:= ", ";
+    getAnyParamToExpr(params[3], c_expr);
+    c_expr.expr &:= ", ";
+    getAnyParamToExpr(params[4], c_expr);
+    c_expr.expr &:= ", ";
+    getAnyParamToExpr(params[5], c_expr);
     c_expr.expr &:= ")";
   end func;
 

@@ -1378,6 +1378,43 @@ objectType cmd_shell (listType arguments)
 
 
 
+objectType cmd_shell_command (listType arguments)
+
+  {
+    rtlArrayType parameters;
+    intType result;
+
+  /* cmd_shell_command */
+    isit_stri(arg_1(arguments));
+    isit_array(arg_2(arguments));
+    isit_stri(arg_3(arguments));
+    isit_stri(arg_4(arguments));
+    isit_stri(arg_5(arguments));
+    logFunction(printf("cmd_shell_command(\"%s\", arr, %d, %d, %d)\n",
+                       striAsUnquotedCStri(take_stri(arg_1(arguments))));
+                printf(", \"%s\"",
+                       striAsUnquotedCStri(take_stri(arg_3(arguments))));
+                printf(", \"%s\"",
+                       striAsUnquotedCStri(take_stri(arg_4(arguments))));
+                printf(", \"%s\"",
+                       striAsUnquotedCStri(take_stri(arg_5(arguments)))););
+    parameters = gen_rtl_array(take_array(arg_2(arguments)));
+    if (parameters == NULL) {
+      return raise_exception(SYS_MEM_EXCEPTION);
+    } else {
+      result = cmdShellCommand(take_stri(arg_1(arguments)), parameters,
+                               take_stri(arg_3(arguments)),
+                               take_stri(arg_4(arguments)),
+                               take_stri(arg_5(arguments)));
+      FREE_RTL_ARRAY(parameters, arraySize(parameters));
+    } /* if */
+    logFunction(printf("cmd_shell_command --> " FMT_U_MEM "\n",
+                       (memSizeType) result););
+    return bld_int_temp(result);
+  } /* cmd_shell_command */
+
+
+
 /**
  *  Convert a string, such that it can be used as shell parameter.
  *  The function adds escape characters or quotations to a string.
