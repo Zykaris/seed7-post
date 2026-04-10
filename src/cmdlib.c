@@ -1422,13 +1422,14 @@ objectType cmd_shell_execute (listType arguments)
     isit_stri(arg_3(arguments));
     isit_stri(arg_4(arguments));
     isit_stri(arg_5(arguments));
-    logFunction(printf("cmd_shell_execute(\"%s\", arr, %d, %d, %d)\n",
-                       striAsUnquotedCStri(take_stri(arg_1(arguments))));
+    logFunction(printf("cmd_shell_execute(\"%s\", array[" FMT_D "]",
+                       striAsUnquotedCStri(take_stri(arg_1(arguments))),
+                       take_array(arg_2(arguments))->max_position);
                 printf(", \"%s\"",
                        striAsUnquotedCStri(take_stri(arg_3(arguments))));
                 printf(", \"%s\"",
                        striAsUnquotedCStri(take_stri(arg_4(arguments))));
-                printf(", \"%s\"",
+                printf(", \"%s\")\n",
                        striAsUnquotedCStri(take_stri(arg_5(arguments)))););
     parameters = gen_rtl_array(take_array(arg_2(arguments)));
     if (parameters == NULL) {

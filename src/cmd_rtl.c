@@ -2092,7 +2092,7 @@ striType createCommandLine (const const_striType command,
               } /* if */
             } /* if */
           } /* for */
-          if (redirectStdin->size != 0) {
+          if (redirectStdin != NULL && redirectStdin->size != 0) {
             osPath = toOsPath(redirectStdin, err_info);
             if (likely(osPath != NULL)) {
               stdinPath = escapeParameter(osPath, err_info);
@@ -2103,7 +2103,7 @@ striType createCommandLine (const const_striType command,
               FREE_STRI(osPath);
             } /* if */
           } /* if */
-          if (redirectStdout->size != 0) {
+          if (redirectStdout != NULL && redirectStdout->size != 0) {
             osPath = toOsPath(redirectStdout, err_info);
             if (likely(osPath != NULL)) {
               stdoutPath = escapeParameter(osPath, err_info);
@@ -2114,7 +2114,7 @@ striType createCommandLine (const const_striType command,
               FREE_STRI(osPath);
             } /* if */
           } /* if */
-          if (redirectStderr->size != 0) {
+          if (redirectStderr != NULL && redirectStderr->size != 0) {
             osPath = toOsPath(redirectStderr, err_info);
             if (likely(osPath != NULL)) {
               stderrPath = escapeParameter(osPath, err_info);
@@ -4734,7 +4734,8 @@ striType cmdShellCommandLine (const const_striType command,
                printf("err_info=%d\n", err_info););
       raise_error(err_info);
     } /* if */
-    logFunction(printf("cmdShellCommandLine --> \"%s\"\n", commandLine););
+    logFunction(printf("cmdShellCommandLine --> \"%s\"\n",
+                       striAsUnquotedCStri(commandLine)););
     return commandLine;
   } /* cmdShellCommandLine */
 
@@ -4808,15 +4809,16 @@ intType cmdShellExecute (const const_striType command,
       returnCode = 0;
     } else {
       os_command = stri_to_os_stri(commandLine, &err_info);
-      FREE_STRI(commandLine);
       if (unlikely(os_command == NULL)) {
         logError(printf("cmdShellExecute: "
                         "stri_to_os_stri(\"%s\") failed:\n"
                         "err_info=%d\n",
                         striAsUnquotedCStri(commandLine), err_info););
+        FREE_STRI(commandLine);
         raise_error(err_info);
         returnCode = 0;
       } else {
+        FREE_STRI(commandLine);
         logMessage(printf("cmdShellExecute: "
                           "os_command: \"" FMT_S_OS "\"\n",
                           os_command););
