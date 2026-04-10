@@ -61,6 +61,27 @@ const func integer: shell (in string: command,
 
 (**
  *  Use the shell to execute a ''command'' with ''parameters''.
+ *  Escape characters and quotations are added to the ''command'' and
+ *  all ''parameters'' before they are forwarded to the operating
+ *  system shell. This way it is not possible to inject a command in
+ *  a parameter. The commands supported and the format of the
+ *  ''parameters'' are not covered by the description of the ''shell''
+ *  function. Due to the usage of the operating system shell and
+ *  external programs, it is hard to write portable programs, which
+ *  use the ''shell'' function.
+ *  @param command Name of the command to be executed. A path must
+ *         use the standard path representation.
+ *  @param parameters Array of argument strings passed to the shell
+ *         command.
+ *  @return the return code of the executed command or of the shell.
+ *)
+const func integer: shell (in string: command,
+                           in array string: parameters) is
+  return shell(command, parameters, "", "", "");
+
+
+(**
+ *  Use the shell to execute a ''command'' with ''parameters''.
  *  Parameters which contain a space must be either enclosed in
  *  double quotes (E.g.: shell("aCmd", "\"do it\" x", "", "", ""); )
  *  or the spaces in the parameter must be preceded by a backslash
@@ -277,10 +298,6 @@ const func string: shellParameters (in array string: paramList) is func
       parameters &:= shellEscape(parameter);
     end for;
   end func;
-
-
-const func integer: shell (in string: command, in array string: paramList) is
-  return shell(command, shellParameters(paramList));
 
 
 const func clib_file: popenClibFile (in string: command,
