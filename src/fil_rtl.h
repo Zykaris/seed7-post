@@ -82,7 +82,6 @@ striType filLiteral (const const_fileType aFile);
 intType filLng (const const_fileType aFile);
 fileType filOpen (const const_striType path, const const_striType mode);
 fileType filOpenNullDevice (void);
-void filPclose (const fileType aPipe);
 fileType filPopen (const const_striType command,
     const const_rtlArrayType parameters, const const_striType mode);
 void filPrint (const const_striType stri);

@@ -575,21 +575,6 @@ objectType fil_out (listType arguments)
 
 
 
-/**
- *  Wait for the process associated with aPipe/arg_1 to terminate.
- *  @param aPipe Pipe to be closed (created by 'fil_popen').
- *  @exception FILE_ERROR A system function returned an error.
- */
-objectType fil_pclose (listType arguments)
-
-  { /* fil_pclose */
-    isit_file(arg_1(arguments));
-    filPclose(take_file(arg_1(arguments)));
-    return SYS_EMPTY_OBJECT;
-  } /* fil_pclose */
-
-
-
 objectType fil_pipe (listType arguments)
 
   {

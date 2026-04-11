@@ -2117,37 +2117,6 @@ fileType filOpenNullDevice (void)
 
 
 /**
- *  Wait for the process associated with 'aPipe' to terminate.
- *  @param aPipe Pipe file to be closed (created by 'filPopen').
- *  @exception FILE_ERROR A system function returned an error.
- */
-void filPclose (const fileType aPipe)
-
-  { /* filPclose */
-    logFunction(printf("filPclose(%s%d)\n",
-                       aPipe == NULL ? "NULL " : "",
-                       aPipe != NULL ? safe_fileno(aPipe->cFile) : 0););
-#if HAS_POPEN
-    assert_file_not_null(aPipe);
-    if (unlikely(aPipe->cFile == NULL)) {
-      logError(printf("filPclose: Called with a closed file.\n"););
-      raise_error(FILE_ERROR);
-    } else if (unlikely(os_pclose(aPipe->cFile) == -1)) {
-      logError(printf("filPclose: pclose(%d) failed:\n"
-                      "errno=%d\nerror: %s\n",
-                      safe_fileno(aPipe->cFile), errno, strerror(errno)););
-      aPipe->cFile = NULL;
-      raise_error(FILE_ERROR);
-    } else {
-      aPipe->cFile = NULL;
-    } /* if */
-#endif
-    logFunction(printf("filPclose -->\n"););
-  } /* filPclose */
-
-
-
-/**
  *  Open a pipe to a shell 'command', with 'parameters'.
  *  The pipe can be used to read, respectively write data
  *  with Latin-1 or UTF-8 encoding. Parameters which contain

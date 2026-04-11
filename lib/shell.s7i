@@ -310,7 +310,6 @@ const func string: shellParameters (in array string: paramList) is func
 
 const func clib_file: popenClibFile (in string: command,
     in array string: parameters, in string: mode) is action "FIL_POPEN";
-const proc: pclose (in clib_file: fileToClose)    is action "FIL_PCLOSE";
 
 
 (**
@@ -460,7 +459,7 @@ const func file: popen (in string: cmdAndParams, in string: mode) is func
  *)
 const proc: close (in popenFile: aPipe) is func
   begin
-    pclose(aPipe.ext_file);
+    close(aPipe.ext_file);
   end func;
 
 
@@ -611,5 +610,5 @@ const func file: popen8 (in string: cmdAndParams, in string: mode) is func
  *)
 const proc: close (in popen8File: aPipe) is func
   begin
-    pclose(aPipe.ext_file);
+    close(aPipe.ext_file);
   end func;

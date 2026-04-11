@@ -49,7 +49,6 @@ objectType fil_ne               (listType arguments);
 objectType fil_open             (listType arguments);
 objectType fil_open_null_device (listType arguments);
 objectType fil_out              (listType arguments);
-objectType fil_pclose           (listType arguments);
 objectType fil_pipe             (listType arguments);
 objectType fil_popen            (listType arguments);
 objectType fil_print            (listType arguments);

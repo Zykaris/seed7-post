@@ -448,7 +448,6 @@ static const actEntryRecord actEntryTable[] = {
     { "FIL_OPEN",                     fil_open,                     },
     { "FIL_OPEN_NULL_DEVICE",         fil_open_null_device,         },
     { "FIL_OUT",                      fil_out,                      },
-    { "FIL_PCLOSE",                   fil_pclose,                   },
     { "FIL_PIPE",                     fil_pipe,                     },
     { "FIL_POPEN",                    fil_popen,                    },
     { "FIL_PRINT",                    fil_print,                    },
