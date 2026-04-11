@@ -242,13 +242,14 @@ const proc: shellCmd (in string: cmdAndParams) is func
 
 
 (**
- *  Convert a [[string]], such that it can be used as shell parameter.
+ *  Change a [[string]] in a way the operating system shell would require.
  *  The function adds escape characters or quotations to a string.
- *  The result is useable as parameter for the functions ''shell'',
- *  ''shellCmd'', ''popen'' and ''popen8''. Shell parameters must be
- *  escaped individually. Afterwards escaped parameters are
- *  joined to a space separated list of parameters.
- *  @return a string which can be used as shell parameter.
+ *  Note that the functions ''shell'', ''shellCmd'', ''popen'' and
+ *  ''popen8'' already add escape characters and quotations to their
+ *  command and all their parameters. Don't use ''shellEscape'' for the
+ *  commands and parameters of ''shell'', ''shellCmd'', ''popen'' and
+ *  ''popen8''. This would lead to wrong results.
+ *  @return a string which is escaped or quoted in a shell specific way.
  *  @exception MEMORY_ERROR Not enough memory to convert 'stri'.
  *  @exception RANGE_ERROR An illegal character is in 'stri'.
  *)
@@ -257,9 +258,10 @@ const func string: shellEscape (in string: stri)   is action "CMD_SHELL_ESCAPE";
 
 (**
  *  Convert a standard path to the path of the operating system.
- *  The result must be escaped with ''shellEscape'' to be useable as
- *  parameter for the functions ''shell'', ''shellCmd'', ''popen'' and
- *  ''popen8''.
+ *  The result can be used as parameter for the functions ''shell'',
+ *  ''shellCmd'', ''popen'' and ''popen8''. A call of ''shellEscape''
+ *  should not be used as is would lead to wrong results. The function
+ *  ''toOsPath'' should only be used for parameters which represent a path.
  *  @param standardPath Path in the standard path representation.
  *  @return a string containing an operating system path.
  *  @exception MEMORY_ERROR Not enough memory to convert ''standardPath''.
@@ -270,11 +272,13 @@ const func string: toOsPath (in string: standardPath)   is action "CMD_TO_OS_PAT
 
 
 (**
- *  Convert a standard path such that it can be used as shell parameter.
- *  The result is useable as parameter for the functions ''shell'',
- *  ''shellCmd'', ''popen'' and ''popen8''. Shell parameters must be
- *  converted individually. Afterwards converted parameters are
- *  joined to a space separated list of parameters.
+ *  Convert a standard path in a way the operating system shell would require.
+ *  Note that the functions ''shell'', ''shellCmd'', ''popen'' and
+ *  ''popen8'' already add escape characters and quotations to their
+ *  command and all their parameters. Don't use ''toShellPath'' for the
+ *  commands and parameters of ''shell'', ''shellCmd'', ''popen'' and
+ *  ''popen8''. This would lead to wrong results. Instead of ''toShellPath''
+ *  you should use ''toOsPath'' for parameters which represent a path.
  *  @param standardPath Path in the standard path representation.
  *  @return a string containing an escaped operating system path.
  *  @exception MEMORY_ERROR Not enough memory to convert ''standardPath''.
