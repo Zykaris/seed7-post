@@ -696,8 +696,10 @@ static striType read_and_alloc_stri (cFileType inFile, memSizeType chars_missing
       currBuffer = currBuffer->next;
       free(oldBuffer);
     } /* while */
-    logFunction(printf("read_and_alloc_stri(%d, " FMT_U_MEM ", %d) -->\n",
-                       safe_fileno(inFile), chars_missing, *err_info););
+    logFunction(printf("read_and_alloc_stri(%d, " FMT_U_MEM
+                       ", %d) --> \"%s\"\n",
+                       safe_fileno(inFile), chars_missing, *err_info,
+                       striAsUnquotedCStri(result)););
     return result;
   } /* read_and_alloc_stri */
 
@@ -1051,11 +1053,15 @@ bigIntType filBigTell (const const_fileType aFile)
 void filClose (const fileType aFile)
 
   { /* filClose */
-    logFunction(printf("filClose(" FMT_U_MEM " %s%d (usage=" FMT_U "))\n",
+    logFunction(printf("filClose(" FMT_U_MEM " %s%d"
+                       " (usage=" FMT_U "%s))\n",
                        (memSizeType) aFile,
                        aFile == NULL ? "NULL " : "",
                        aFile != NULL ? safe_fileno(aFile->cFile) : 0,
-                       aFile != NULL ? aFile->usage_count : (uintType) 0););
+                       aFile != NULL ?
+                           aFile->usage_count : (uintType) 0,
+                       aFile != NULL && aFile->isPipe ?
+                           ", isPipe" : ""););
     assert_file_not_null(aFile);
     if (unlikely(aFile->cFile == NULL)) {
       logError(printf("filClose: Called with a closed file.\n"););
@@ -1092,9 +1098,11 @@ void filClose (const fileType aFile)
 #if HAS_POPEN
     } /* if */
 #endif
-    logFunction(printf("filClose(" FMT_U_MEM " %d (usage=" FMT_U ")) -->\n",
+    logFunction(printf("filClose(" FMT_U_MEM " %d"
+                       " (usage=" FMT_U "%s)) -->\n",
                        (memSizeType) aFile, safe_fileno(aFile->cFile),
-                       aFile->usage_count););
+                       aFile->usage_count,
+                       aFile->isPipe ? ", isPipe" : ""););
   } /* filClose */
 
 
@@ -1210,11 +1218,16 @@ genericType filCreateGeneric (const genericType from_value)
 void filDestr (const fileType oldFile)
 
   { /* filDestr */
-    logFunction(printf("filDestr(" FMT_U_MEM " %s%d (usage=" FMT_U "))\n",
+    logFunction(printf("filDestr(" FMT_U_MEM " %s%d"
+                       " (usage=" FMT_U "%s))\n",
                        (memSizeType) oldFile,
                        oldFile == NULL ? "NULL " : "",
-                       oldFile != NULL ? safe_fileno(oldFile->cFile) : 0,
-                       oldFile != NULL ? oldFile->usage_count : (uintType) 0););
+                       oldFile != NULL ?
+                           safe_fileno(oldFile->cFile) : 0,
+                       oldFile != NULL ?
+                           oldFile->usage_count : (uintType) 0,
+                       oldFile != NULL && oldFile->isPipe ?
+                           ", isPipe" : ""););
     if (oldFile != NULL && oldFile->usage_count != 0) {
       oldFile->usage_count--;
       if (oldFile->usage_count == 0) {
@@ -1331,11 +1344,16 @@ void filFlush (const const_fileType outFile)
 void filFree (const fileType oldFile)
 
   { /* filFree */
-    logFunction(printf("filFree(" FMT_U_MEM " %s%d (usage=" FMT_U "))\n",
+    logFunction(printf("filFree(" FMT_U_MEM " %s%d"
+                       " (usage=" FMT_U "%s))\n",
                        (memSizeType) oldFile,
                        oldFile == NULL ? "NULL " : "",
-                       oldFile != NULL ? safe_fileno(oldFile->cFile) : 0,
-                       oldFile != NULL ? oldFile->usage_count : (uintType) 0););
+                       oldFile != NULL ?
+                           safe_fileno(oldFile->cFile) : 0,
+                       oldFile != NULL ?
+                           oldFile->usage_count : (uintType) 0,
+                       oldFile != NULL && oldFile->isPipe ?
+                           ", isPipe" : ""););
     assert_file_not_null(oldFile);
     if (oldFile->cFile != NULL) {
 #if HAS_POPEN
@@ -2248,12 +2266,16 @@ fileType filPopen (const const_striType command,
                        striAsUnquotedCStri(command),
                        parameters->max_position);
                 printf(", \"%s\") --> " FMT_U_MEM " %s%d"
-                       " (usage=" FMT_U ")\n",
+                       " (usage=" FMT_U "%s)\n",
                        striAsUnquotedCStri(mode),
                        (memSizeType) pipeOpened,
                        pipeOpened == NULL ? "NULL " : "",
-                       pipeOpened != NULL ? safe_fileno(pipeOpened->cFile) : 0,
-                       pipeOpened != NULL ? pipeOpened->usage_count : (uintType) 0););
+                       pipeOpened != NULL ?
+                           safe_fileno(pipeOpened->cFile) : 0,
+                       pipeOpened != NULL ?
+                           pipeOpened->usage_count : (uintType) 0,
+                       pipeOpened != NULL && pipeOpened->isPipe ?
+                           ", isPipe" : ""););
     return pipeOpened;
   } /* filPopen */
 
