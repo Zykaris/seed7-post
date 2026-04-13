@@ -1387,6 +1387,12 @@ static const char *match_object_id (const_objectType anyobject)
 
 
 
+#define INOUT_PARAM " inout_param "
+#define OTHER_PARAM " other_param "
+#define ATTR_PARAM " attr "
+
+
+
 static void list_node_names (const_nodeType anynode, char *buffer)
 
   {
@@ -1395,6 +1401,9 @@ static void list_node_names (const_nodeType anynode, char *buffer)
     const char *stri1;
     const char *stri2;
     const char *stri3;
+    size_t len1;
+    size_t len2;
+    size_t len3;
 
   /* list_node_names */
     logFunction(printf("list_node_names\n"););
@@ -1432,11 +1441,15 @@ static void list_node_names (const_nodeType anynode, char *buffer)
           stri2 = "";
         } /* if */
         stri3 = obj_ptr(anynode->match_obj);
-        if (buf_len + strlen(stri1) + strlen(stri2) +
-            strlen(stri3) <= NODE_NAME_LEN_MAX) {
-          strcat(buffer, stri1);
-          strcat(buffer, stri2);
-          strcat(buffer, stri3);
+        len1 = strlen(stri1);
+        len2 = strlen(stri2);
+        len3 = strlen(stri3);
+        buf_len2 = buf_len + len1 + len2 + len3;
+        if (buf_len2 <= NODE_NAME_LEN_MAX) {
+          memcpy(&buffer[buf_len], stri1, len1);
+          memcpy(&buffer[buf_len + len1], stri2, len2);
+          memcpy(&buffer[buf_len + len1 + len2], stri3, len3);
+          buffer[buf_len2] = '\0';
           if (anynode->entity != NULL) {
             if (anynode->entity->data.owner != NULL) {
               prot_cstri8(buffer);
@@ -1445,28 +1458,31 @@ static void list_node_names (const_nodeType anynode, char *buffer)
               prot_nl();
             } /* if */
           } /* if */
-          buf_len2 = strlen(buffer);
           if (anynode->symbol != NULL &&
               buf_len2 + 1 <= NODE_NAME_LEN_MAX) {
-            strcat(buffer, " ");
+            buffer[buf_len2] = ' ';
+            buffer[buf_len2 + 1] = '\0';
             list_node_names(anynode->symbol, buffer);
             buffer[buf_len2] = '\0';
           } /* if */
           if (anynode->inout_param != NULL &&
-              buf_len2 + STRLEN(" inout_param ") <= NODE_NAME_LEN_MAX) {
-            strcat(buffer, " inout_param ");
+              buf_len2 + STRLEN(INOUT_PARAM) <= NODE_NAME_LEN_MAX) {
+            memcpy(&buffer[buf_len2], INOUT_PARAM, STRLEN(INOUT_PARAM));
+            buffer[buf_len2 + STRLEN(INOUT_PARAM)] = '\0';
             list_node_names(anynode->inout_param, buffer);
             buffer[buf_len2] = '\0';
           } /* if */
           if (anynode->other_param != NULL &&
-              buf_len2 + STRLEN(" other_param ") <= NODE_NAME_LEN_MAX) {
-            strcat(buffer, " other_param ");
+              buf_len2 + STRLEN(OTHER_PARAM) <= NODE_NAME_LEN_MAX) {
+            memcpy(&buffer[buf_len2], OTHER_PARAM, STRLEN(OTHER_PARAM));
+            buffer[buf_len2 + STRLEN(OTHER_PARAM)] = '\0';
             list_node_names(anynode->other_param, buffer);
             buffer[buf_len2] = '\0';
           } /* if */
           if (anynode->attr != NULL &&
-              buf_len2 + STRLEN(" attr ") <= NODE_NAME_LEN_MAX) {
-            strcat(buffer, " attr ");
+              buf_len2 + STRLEN(ATTR_PARAM) <= NODE_NAME_LEN_MAX) {
+            memcpy(&buffer[buf_len2], ATTR_PARAM, STRLEN(ATTR_PARAM));
+            buffer[buf_len2 + STRLEN(ATTR_PARAM)] = '\0';
             list_node_names(anynode->attr, buffer);
             buffer[buf_len2] = '\0';
           } /* if */
