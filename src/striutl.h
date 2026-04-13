@@ -109,7 +109,6 @@ typedef wchar_t         *os_striType;
 typedef const wchar_t   *const_os_striType;
 #define os_stri_strlen   wcslen
 #define os_stri_strcpy   wcscpy
-#define os_stri_strcat   wcscat
 #define os_stri_strchr   wcschr
 #define os_stri_strrchr  wcsrchr
 #define ALLOC_OS_STRI(var,len)    ALLOC_HEAP(var, os_striType, SIZ_UTF16(len))
@@ -125,7 +124,6 @@ typedef cstriType        os_striType;
 typedef const_cstriType  const_os_striType;
 #define os_stri_strlen   strlen
 #define os_stri_strcpy   strcpy
-#define os_stri_strcat   strcat
 #define os_stri_strchr   strchr
 #define os_stri_strrchr  strrchr
 #define ALLOC_OS_STRI    ALLOC_CSTRI
