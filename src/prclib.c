@@ -727,8 +727,10 @@ objectType prc_cpy (listType arguments)
   {
     objectType dest;
     objectType source;
+    objectType block_body;
     blockType block_source;
     blockType old_block;
+    errInfoType err_info = OKAY_NO_ERROR;
 
   /* prc_cpy */
     dest = arg_1(arguments);
@@ -771,8 +773,31 @@ objectType prc_cpy (listType arguments)
     is_variable(dest);
     if (CATEGORY_OF_OBJ(source) == MATCHOBJECT) {
       if (unlikely(source->value.listValue->next != NULL)) {
-        logError(printf("prc_cpy: Source with parameters.\n"););
-        return raise_exception(SYS_ACT_ILLEGAL_EXCEPTION);
+        block_body = copy_expression(source, &err_info);
+        if (unlikely(err_info != OKAY_NO_ERROR)) {
+          logError(printf("prc_cpy: No memory\n"););
+          return raise_exception(SYS_MEM_EXCEPTION);
+        } else if (unlikely((block_source =
+            new_block(NULL, NULL, NULL, NULL, block_body)) == NULL)) {
+          logError(printf("prc_cpy: No memory\n"););
+          free_expression(block_body);
+          return raise_exception(SYS_MEM_EXCEPTION);
+        } else {
+          if (CATEGORY_OF_OBJ(dest) == BLOCKOBJECT) {
+            old_block = take_block(dest);
+            if (old_block != NULL && old_block->usage_count != 0) {
+              old_block->usage_count--;
+              if (old_block->usage_count == 0) {
+                free_block(old_block);
+              } /* if */
+            } /* if */
+          } else if (CATEGORY_OF_OBJ(dest) == ACTOBJECT) {
+            SET_CATEGORY_OF_OBJ(dest, BLOCKOBJECT);
+          } else {
+            return raise_exception(SYS_ACT_ILLEGAL_EXCEPTION);
+          } /* if */
+          dest->value.blockValue = block_source;
+        } /* if */
       } else {
         source = source->value.listValue->obj;
       } /* if */
@@ -814,9 +839,9 @@ objectType prc_cpy (listType arguments)
         return raise_exception(SYS_ACT_ILLEGAL_EXCEPTION);
       } /* if */
       dest->value.actValue = source->value.actValue;
-    } else {
+    } else if (CATEGORY_OF_OBJ(source) != MATCHOBJECT) {
       logError(printf("prc_cpy: source category %d neither "
-                       "BLOCKOBJECT nor ACTOBJECT.\n",
+                       "BLOCKOBJECT nor ACTOBJECT nor MATCHOBJECT.\n",
                        CATEGORY_OF_OBJ(source)););
       return raise_exception(SYS_ACT_ILLEGAL_EXCEPTION);
     } /* if */
@@ -861,7 +886,9 @@ objectType prc_create (listType arguments)
   {
     objectType dest;
     objectType source;
-    blockType block_value;
+    objectType block_body;
+    blockType block_source;
+    errInfoType err_info = OKAY_NO_ERROR;
     const_actEntryType actEntry;
 
   /* prc_create */
@@ -884,15 +911,34 @@ objectType prc_create (listType arguments)
                 } else {
                   printf("category %u)\n", CATEGORY_OF_OBJ(source));
                 });
+    if (CATEGORY_OF_OBJ(source) == MATCHOBJECT) {
+      if (unlikely(source->value.listValue->next != NULL)) {
+        block_body = copy_expression(source, &err_info);
+        if (unlikely(err_info != OKAY_NO_ERROR)) {
+          logError(printf("prc_cpy: No memory\n"););
+          return raise_exception(SYS_MEM_EXCEPTION);
+        } else if (unlikely((block_source =
+            new_block(NULL, NULL, NULL, NULL, block_body)) == NULL)) {
+          logError(printf("prc_cpy: No memory\n"););
+          free_expression(block_body);
+          return raise_exception(SYS_MEM_EXCEPTION);
+        } else {
+          SET_CATEGORY_OF_OBJ(dest, BLOCKOBJECT);
+          dest->value.blockValue = block_source;
+        } /* if */
+      } else {
+        source = source->value.listValue->obj;
+      } /* if */
+    } /* if */
     if (CATEGORY_OF_OBJ(source) == BLOCKOBJECT) {
       SET_CATEGORY_OF_OBJ(dest, BLOCKOBJECT);
-      block_value = take_block(source);
-      dest->value.blockValue = block_value;
+      block_source = take_block(source);
+      dest->value.blockValue = block_source;
       if (TEMP_OBJECT(source)) {
         source->value.blockValue = NULL;
       } else {
-        if (block_value != NULL && block_value->usage_count != 0) {
-          block_value->usage_count++;
+        if (block_source != NULL && block_source->usage_count != 0) {
+          block_source->usage_count++;
         } /* if */
       } /* if */
     } else if (CATEGORY_OF_OBJ(source) == ACTENTRYOBJECT) {
@@ -902,9 +948,9 @@ objectType prc_create (listType arguments)
     } else if (CATEGORY_OF_OBJ(source) == ACTOBJECT) {
       SET_CATEGORY_OF_OBJ(dest, ACTOBJECT);
       dest->value.actValue = take_action(source);
-    } else {
+    } else if (CATEGORY_OF_OBJ(source) != MATCHOBJECT) {
       logError(printf("prc_create: source category %d neither "
-                       "BLOCKOBJECT nor ACTENTRYOBJECT nor ACTOBJECT.\n",
+                       "BLOCKOBJECT nor ACTENTRYOBJECT nor ACTOBJECT nor MATCHOBJECT.\n",
                        CATEGORY_OF_OBJ(source)););
       return raise_exception(SYS_ACT_ILLEGAL_EXCEPTION);
     } /* if */

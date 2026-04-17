@@ -306,8 +306,9 @@ static const actEntryRecord actEntryTable[] = {
     { "CMD_SET_OWNER",                cmd_set_owner,                },
     { "CMD_SET_OWNER_OF_SYMLINK",     cmd_set_owner_of_symlink,     },
     { "CMD_SET_SEARCH_PATH",          cmd_set_search_path,          },
-    { "CMD_SHELL",                    cmd_shell,                    },
+    { "CMD_SHELL_COMMAND_LINE",       cmd_shell_command_line,       },
     { "CMD_SHELL_ESCAPE",             cmd_shell_escape,             },
+    { "CMD_SHELL_EXECUTE",            cmd_shell_execute,            },
     { "CMD_TO_OS_PATH",               cmd_to_os_path,               },
     { "CMD_UNSETENV",                 cmd_unsetenv,                 },
 
@@ -447,7 +448,6 @@ static const actEntryRecord actEntryTable[] = {
     { "FIL_OPEN",                     fil_open,                     },
     { "FIL_OPEN_NULL_DEVICE",         fil_open_null_device,         },
     { "FIL_OUT",                      fil_out,                      },
-    { "FIL_PCLOSE",                   fil_pclose,                   },
     { "FIL_PIPE",                     fil_pipe,                     },
     { "FIL_POPEN",                    fil_popen,                    },
     { "FIL_PRINT",                    fil_print,                    },
