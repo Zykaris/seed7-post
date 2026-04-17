@@ -24,6 +24,7 @@
 (********************************************************************)
 
 
+const ACTION: SQL_AFFECTED_ROWS      is action "SQL_AFFECTED_ROWS";
 const ACTION: SQL_BIND_BIGINT        is action "SQL_BIND_BIGINT";
 const ACTION: SQL_BIND_BIGRAT        is action "SQL_BIND_BIGRAT";
 const ACTION: SQL_BIND_BOOL          is action "SQL_BIND_BOOL";
@@ -89,6 +90,7 @@ const ACTION: SQL_STMT_COLUMN_NAME   is action "SQL_STMT_COLUMN_NAME";
 const proc: sql_prototypes (inout file: c_prog) is func
 
   begin
+    declareExtern(c_prog, "intType     sqlAffectedRows (sqlStmtType);");
     declareExtern(c_prog, "void        sqlBindBigInt (sqlStmtType, intType, const const_bigIntType);");
     declareExtern(c_prog, "void        sqlBindBigRat (sqlStmtType, intType, const const_bigIntType, const const_bigIntType);");
     declareExtern(c_prog, "void        sqlBindBool (sqlStmtType, intType, boolType);");
