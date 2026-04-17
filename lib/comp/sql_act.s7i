@@ -152,6 +152,16 @@ const proc: sql_prototypes (inout file: c_prog) is func
   end func;
 
 
+const proc: process (SQL_AFFECTED_ROWS, in reference: function,
+    in ref_list: params, inout expr_type: c_expr) is func
+
+  begin
+    c_expr.expr &:= "sqlAffectedRows(";
+    process_expr(params[1], c_expr);
+    c_expr.expr &:= ")";
+  end func;
+
+
 const proc: process (SQL_BIND_BIGINT, in reference: function,
     in ref_list: params, inout expr_type: c_expr) is func
 
